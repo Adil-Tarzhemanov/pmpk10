@@ -1,0 +1,1907 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>ПМПК №10 Астана — психолого-медико-педагогическая консультация</title>
+<meta name="description" content="КГУ «Психолого-медико-педагогическая консультация № 10» акимата города Астаны. Бесплатное обследование детей от 0 до 18 лет, рекомендации по программе обучения, запись на приём.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="ПМПК №10 акимата города Астаны">
+<meta property="og:description" content="Помогаем определить особые образовательные потребности ребёнка. Бесплатно, для детей от 0 до 18 лет.">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:locale:alternate" content="kk_KZ">
+<meta name="theme-color" content="#0E4E66">
+
+<!-- PT Serif + PT Sans: семейство ParaType, спроектированное с обязательной
+     поддержкой cyrillic-ext — именно там живут казахские ә ғ қ ң ө ұ ү һ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&display=swap">
+
+<style>
+/* ============================================================
+   ТОКЕНЫ. Светлая тема — база.
+   ============================================================ */
+:root {
+  --ground:    #F4F6F4;
+  --surface:   #FFFFFF;
+  --surface-2: #ECF0F0;
+  --sand:      #F5E7D8;
+  --line:      #D6DEDE;         /* декоративные разделители */
+  --line-soft: #E6ECEC;
+  --line-strong: #779292;       /* границы полей и интерактивных элементов, 3:1 — WCAG 1.4.11 */
+
+  --ink:       #0D2833;
+  --ink-2:     #33525E;
+  --muted:     #5B7078;
+
+  --sky:       #17708F;
+  --sky-deep:  #0E4E66;
+  --sky-wash:  #E4EFF3;
+
+  /* --apricot только для декора (заливки, рамки, пин на карте): 4.26:1, хватает для
+     нетекстовых элементов. Для текста строго --apricot-text: 4.5:1 на всех подложках. */
+  --apricot:   #C25E2B;
+  --apricot-text: #9B5836;
+  --apricot-wash: #FBEADF;
+
+  --ok:        #2F7A55;
+  --shadow:    0 1px 2px rgba(13,40,51,.06), 0 8px 24px -12px rgba(13,40,51,.18);
+  --shadow-lg: 0 2px 4px rgba(13,40,51,.05), 0 24px 48px -20px rgba(13,40,51,.28);
+
+  --font-display: "PT Serif", "Noto Serif", Georgia, "Droid Serif", serif;
+  --font-body: "PT Sans", "Segoe UI", system-ui, -apple-system, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --fs: 1;
+  --radius: 4px;
+  --wrap: 1160px;
+}
+
+/* Тёмная тема ОС — только если пользователь явно не выбрал светлую */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:    #081820;
+    --surface:   #0E2530;
+    --surface-2: #143039;
+    --sand:      #26303A;
+    --line:      #23414C;
+    --line-soft: #1A343E;
+    --line-strong: #3F7488;
+
+    --ink:       #E3EDF0;
+    --ink-2:     #B4C9D0;
+    --muted:     #8AA3AC;
+
+    --sky:       #5CB9D9;
+    --sky-deep:  #8FD3EA;
+    --sky-wash:  #12333F;
+
+    --apricot:   #EFA271;
+    --apricot-text: #EFA271;   /* в тёмной теме исходный оттенок уже даёт 7.6:1 */
+    --apricot-wash: #2E2319;
+
+    --ok:        #6FC59A;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    --shadow-lg: 0 2px 4px rgba(0,0,0,.35), 0 24px 48px -20px rgba(0,0,0,.7);
+  }
+}
+/* Явный выбор тёмной темы */
+:root[data-theme="dark"] {
+  --ground:    #081820;
+  --surface:   #0E2530;
+  --surface-2: #143039;
+  --sand:      #26303A;
+  --line:      #23414C;
+  --line-soft: #1A343E;
+  --line-strong: #3F7488;
+
+  --ink:       #E3EDF0;
+  --ink-2:     #B4C9D0;
+  --muted:     #8AA3AC;
+
+  --sky:       #5CB9D9;
+  --sky-deep:  #8FD3EA;
+  --sky-wash:  #12333F;
+
+  --apricot:   #EFA271;
+  --apricot-text: #EFA271;
+  --apricot-wash: #2E2319;
+
+  --ok:        #6FC59A;
+  --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lg: 0 2px 4px rgba(0,0,0,.35), 0 24px 48px -20px rgba(0,0,0,.7);
+}
+
+/* ============================================================
+   БАЗА
+   ============================================================ */
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Липкое меню не должно перекрывать элемент, получивший фокус с клавиатуры
+     (WCAG 2.2 AA «Focus Not Obscured») и якорные переходы */
+  scroll-padding-top: 72px;
+}
+
+/* Ссылка «к содержанию» — первый таб-стоп на странице */
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  color: var(--sky-deep);
+  font-weight: 700;
+  padding: 12px 20px;
+  border: 2px solid var(--sky-deep);
+}
+.skip:focus { left: 8px; top: 8px; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: calc(16px * var(--fs));
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.18;
+  text-wrap: balance;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+p { margin: 0; }
+/* ol тоже — иначе нативные маркеры дублируют подписи «Шаг 1…4» */
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+a { color: var(--sky-deep); text-decoration-color: color-mix(in srgb, var(--sky) 35%, transparent); text-underline-offset: 3px; }
+a:hover { text-decoration-color: currentColor; }
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+img, svg { max-width: 100%; }
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.eyebrow {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lede { font-size: 1.125rem; color: var(--ink-2); max-width: 62ch; }
+
+/* ============================================================
+   ВЕРХНЯЯ СЛУЖЕБНАЯ ПАНЕЛЬ
+   ============================================================ */
+.topbar {
+  background: var(--sky-deep);
+  color: #E8F2F6;
+  font-size: .8125rem;
+}
+:root[data-theme="dark"] .topbar,
+.topbar { --topbar-fg: #E8F2F6; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .topbar { background: #0B2933; }
+}
+:root[data-theme="dark"] .topbar { background: #0B2933; }
+
+.topbar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  min-height: 40px;
+  padding-block: 6px;
+}
+.topbar a { color: var(--topbar-fg); text-decoration: none; opacity: .82; }
+.topbar a:hover { opacity: 1; text-decoration: underline; }
+.topbar__spacer { flex: 1 1 auto; }
+
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+  color: var(--topbar-fg);
+  font: inherit;
+  padding: 6px 12px;
+  min-height: 32px;          /* WCAG 2.2 «Target Size (Minimum)» — минимум 24 CSS px */
+  border-radius: 2px;
+  cursor: pointer;
+}
+.tool:hover { background: rgba(255,255,255,.2); }
+.tool[aria-pressed="true"] { background: #fff; color: var(--sky-deep); border-color: #fff; }
+
+.langs { display: inline-flex; border: 1px solid rgba(255,255,255,.24); border-radius: 2px; overflow: hidden; }
+.langs button {
+  font: inherit; font-weight: 600;
+  background: transparent; color: var(--topbar-fg);
+  border: 0; padding: 6px 14px; min-height: 32px; cursor: pointer;
+}
+.langs button + button { border-left: 1px solid rgba(255,255,255,.24); }
+.langs button[aria-pressed="true"] { background: #fff; color: var(--sky-deep); }
+
+/* ============================================================
+   ШАПКА
+   ============================================================ */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-block: 18px;
+}
+.brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; min-width: 0; }
+.brand__mark { flex: 0 0 auto; }
+.brand__name {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.brand__sub { font-size: .8125rem; color: var(--muted); margin-top: 2px; }
+/* Короткое имя — только для узких экранов, где полное ломается в лапшу */
+.brand__short { display: none; font-family: var(--font-display); font-size: 1.0625rem; font-weight: 700; line-height: 1.25; }
+
+.masthead__contact { margin-left: auto; text-align: right; flex: 0 0 auto; }
+.masthead__phone {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.masthead__hours { font-size: .8125rem; color: var(--muted); }
+
+.burger { display: none; }
+
+/* Звонок — главное действие родителя с телефона. На десктопе номер виден
+   в шапке текстом, поэтому кнопка нужна только на узких экранах. */
+.callbtn {
+  display: none;
+  margin-left: auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  flex: 0 0 auto;
+  background: var(--sky-deep);
+  color: #fff;
+  border-radius: var(--radius);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .callbtn { color: #06212B; }
+}
+:root[data-theme="dark"] .callbtn { color: #06212B; }
+
+/* ============================================================
+   НАВИГАЦИЯ
+   ============================================================ */
+.nav { background: var(--surface); border-bottom: 2px solid var(--sky-deep); position: sticky; top: 0; z-index: 20; }
+.nav__list { display: flex; flex-wrap: wrap; }
+.nav__list a {
+  display: block;
+  padding: 13px 16px;
+  font-size: .9375rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+.nav__list a:hover { color: var(--sky-deep); background: var(--sky-wash); }
+.nav__list a[aria-current="page"] { color: var(--sky-deep); font-weight: 700; border-bottom-color: var(--apricot); }
+
+/* ============================================================
+   ГЕРОЙ
+   ============================================================ */
+.hero { padding-block: 56px 64px; position: relative; overflow: hidden; }
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr);
+  gap: 56px;
+  align-items: start;
+}
+.hero h1 { font-size: clamp(2rem, 1.2rem + 2.6vw, 3rem); margin-block: 14px 20px; }
+.hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.fact { flex: 1 1 150px; padding: 18px 20px 4px 0; }
+.fact + .fact { padding-left: 20px; border-left: 1px solid var(--line); }
+.fact__n {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--sky-deep);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.fact__t { font-size: .875rem; color: var(--muted); margin-top: 4px; }
+
+/* Карточка записи */
+.booking {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--apricot);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 26px 26px 22px;
+}
+.booking h2 { font-size: 1.25rem; }
+.booking__when {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--apricot-wash);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-block: 16px;
+  font-size: .9375rem;
+  color: var(--ink-2);
+}
+.booking__when strong { color: var(--ink); }
+.booking__note { font-size: .8125rem; color: var(--muted); margin-top: 12px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font: inherit;
+  font-weight: 600;
+  padding: 13px 22px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+}
+.btn--primary { background: var(--sky-deep); color: #fff; }
+.btn--primary:hover { background: var(--sky); }
+:root[data-theme="dark"] .btn--primary { color: #06212B; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn--primary { color: #06212B; }
+}
+.btn--ghost { background: transparent; color: var(--sky-deep); border-color: var(--line); }
+.btn--ghost:hover { background: var(--sky-wash); border-color: var(--sky); }
+.btn--block { width: 100%; }
+
+.hero__cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ============================================================
+   СЕКЦИИ
+   ============================================================ */
+.band { padding-block: 60px; }
+.band--surface { background: var(--surface); border-block: 1px solid var(--line); }
+.band__head { max-width: 62ch; margin-bottom: 36px; }
+.band__head h2 { font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem); margin-top: 10px; }
+.band__head p { margin-top: 12px; color: var(--ink-2); }
+
+/* Шаги — нумерация оправдана: это реальная последовательность */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.step { background: var(--surface); padding: 24px 22px 26px; }
+.band--surface .step { background: var(--ground); }
+.step__n {
+  font-family: var(--font-display);
+  font-size: .875rem;
+  font-weight: 700;
+  color: var(--apricot-text);
+  letter-spacing: .06em;
+}
+.step h3 { font-size: 1.0625rem; margin-block: 10px 8px; }
+.step p { font-size: .9375rem; color: var(--muted); }
+
+/* Две колонки: документы + услуги */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+
+.checklist li {
+  display: flex;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: .9375rem;
+}
+.checklist li::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 18px; height: 18px;
+  margin-top: 3px;
+  border: 1.5px solid var(--ok);
+  border-radius: 2px;
+  background:
+    linear-gradient(45deg, transparent 44%, var(--ok) 44%, var(--ok) 56%, transparent 56%) center/11px 11px no-repeat,
+    linear-gradient(-45deg, transparent 44%, var(--ok) 44%, var(--ok) 56%, transparent 56%) center/11px 11px no-repeat;
+  background-position: 3px 2px, 3px 2px;
+}
+
+.services { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.service { background: var(--surface); padding: 18px 20px; }
+.band--surface .service { background: var(--ground); }
+.service h3 { font-size: 1rem; }
+.service p { font-size: .875rem; color: var(--muted); margin-top: 4px; }
+
+/* Новости */
+.news { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.band--surface .card { background: var(--ground); }
+.card__img { aspect-ratio: 16 / 9; background: var(--surface-2); display: block; }
+.card__body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.card__date { font-size: .8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card h3 { font-size: 1.0625rem; }
+.card p { font-size: .9375rem; color: var(--muted); }
+.card__more { margin-top: auto; padding-top: 8px; font-size: .9375rem; font-weight: 600; }
+
+/* Плитки разделов */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.tile {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  text-decoration: none;
+  color: inherit;
+}
+.band--surface .tile { background: var(--ground); }
+.tile:hover { border-color: var(--sky); box-shadow: var(--shadow); }
+.tile h3 { font-size: 1.0625rem; margin-top: 14px; }
+.tile p { font-size: .875rem; color: var(--muted); margin-top: 6px; }
+.tile svg { color: var(--sky); }
+
+/* Контакты */
+.contacts { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: start; }
+.dl { display: grid; grid-template-columns: max-content 1fr; gap: 14px 24px; font-size: .9375rem; }
+.dl dt { color: var(--muted); }
+.dl dd { margin: 0; }
+.tbd {
+  display: inline-block;
+  font-family: var(--font-body);
+  background: var(--sand);
+  border: 1px dashed var(--apricot);
+  color: var(--apricot-text);
+  font-size: .8125rem;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 2px;
+}
+.map {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.map svg { display: block; width: 100%; height: auto; }
+
+/* Форма */
+.form { display: grid; gap: 14px; max-width: 520px; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .875rem; font-weight: 600; }
+.field input, .field textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 11px 13px;
+  min-height: 44px;
+}
+.band--surface .field input, .band--surface .field textarea { background: var(--ground); }
+.field input:focus, .field textarea:focus { border-color: var(--sky); }
+.field textarea { min-height: 110px; resize: vertical; }
+
+/* Ошибки: рамка + текст рядом с полем, а не только цветом (WCAG 1.4.1) */
+.field input[aria-invalid="true"], .field textarea[aria-invalid="true"] {
+  border-color: var(--apricot-text);
+  border-width: 2px;
+}
+.field__err {
+  display: none;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--apricot-text);
+}
+.field__err[data-shown="true"] { display: flex; }
+
+/* Сводка ошибок в начале формы — точка приземления фокуса после неудачной отправки */
+.errsum {
+  display: none;
+  border: 2px solid var(--apricot-text);
+  background: var(--apricot-wash);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.errsum[data-shown="true"] { display: block; }
+.errsum h4 { font-size: 1rem; color: var(--apricot-text); margin-bottom: 8px; }
+.errsum a { color: var(--apricot-text); font-weight: 600; }
+.errsum li { margin-top: 4px; }
+
+.formstatus {
+  display: none;
+  gap: 8px;
+  align-items: center;
+  font-weight: 600;
+  color: var(--ok);
+}
+.formstatus[data-shown="true"] { display: flex; }
+
+/* Подвал */
+.footer { background: var(--sky-deep); color: #D6E6EC; padding-block: 48px 28px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .footer { background: #0B2933; }
+}
+:root[data-theme="dark"] .footer { background: #0B2933; }
+.footer a { color: #fff; opacity: .85; text-decoration: none; }
+.footer a:hover { opacity: 1; text-decoration: underline; }
+.footer__grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 40px; }
+.footer h3 { font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase; color: #8FBACA; font-family: var(--font-body); font-weight: 700; margin-bottom: 14px; }
+/* Ссылки подвала — блочные с вертикальным паддингом: инлайновые давали
+   зону нажатия всего 20px при минимуме 24px (WCAG 2.2 «Target Size») */
+.footer li a { display: inline-block; padding-block: 6px; }
+.footer li + li { margin-top: 2px; }
+.footer__bottom {
+  margin-top: 40px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.14);
+  font-size: .8125rem; color: #90B4C2;
+  display: flex; flex-wrap: wrap; gap: 8px 24px;
+}
+.footer__name { font-family: var(--font-display); font-size: 1.0625rem; color: #fff; line-height: 1.3; }
+
+/* Бейдж макета */
+.demo {
+  position: fixed;
+  right: 16px; bottom: 16px;
+  z-index: 50;
+  background: var(--ink);
+  color: var(--ground);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 7px 13px;
+  border-radius: 100px;
+  box-shadow: var(--shadow-lg);
+}
+
+
+/* ============================================================
+   О НАС: цели, функции, состав специалистов
+   ============================================================ */
+/* Нумерованный список — для целей и функций учреждения.
+   Счётчик рисуется через ::before, чтобы номер не попадал в текст при копировании */
+.numlist { counter-reset: n; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.numlist li { background: var(--surface); padding: 15px 20px 17px 56px; position: relative; font-size: .9375rem; }
+.band--surface .numlist li { background: var(--ground); }
+.numlist li::before {
+  counter-increment: n; content: counter(n);
+  position: absolute; left: 18px; top: 15px;
+  width: 24px; height: 24px; border-radius: 100px;
+  background: var(--sky-wash); color: var(--sky-deep);
+  font-size: .8125rem; font-weight: 700;
+  display: grid; place-items: center;
+}
+
+.people { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.person { background: var(--surface); border: 1px solid var(--line); padding: 20px; }
+.band--surface .person { background: var(--ground); }
+.person__ava {
+  width: 46px; height: 46px; border-radius: 100px;
+  background: var(--sky-wash); color: var(--sky-deep);
+  font-family: var(--font-display); font-size: 1.0625rem; font-weight: 700;
+  display: grid; place-items: center; margin-bottom: 14px;
+}
+.person__role { font-size: 1rem; }
+.person__name { font-size: .875rem; color: var(--muted); margin-top: 6px; }
+
+/* ============================================================
+   ДОКУМЕНТЫ
+   ============================================================ */
+.docgroup + .docgroup { margin-top: 34px; }
+.docgroup__title { font-size: 1.0625rem; margin-bottom: 14px; }
+.doclist { border: 1px solid var(--line); }
+.doc {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 15px 20px; background: var(--surface);
+  text-decoration: none; color: inherit;
+}
+.band--surface .doc { background: var(--ground); }
+.doc + .doc { border-top: 1px solid var(--line); }
+.doc:hover { background: var(--sky-wash); }
+.doc__icon { flex: 0 0 auto; color: var(--sky); margin-top: 1px; }
+.doc__body { flex: 1 1 auto; min-width: 0; }
+.doc__title { display: block; font-weight: 600; font-size: .9375rem; }
+.doc__meta { display: block; font-size: .8125rem; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.doc__dl { flex: 0 0 auto; align-self: center; color: var(--sky-deep); }
+
+/* Выноска-примечание: памятка, порядок отклика, оговорки по демо-данным */
+.note { border-left: 3px solid var(--apricot); background: var(--apricot-wash); padding: 18px 22px; }
+.note h3 { font-size: 1rem; margin-bottom: 10px; }
+.note p { font-size: .9375rem; color: var(--ink-2); }
+.note--sky { border-left-color: var(--sky); background: var(--sky-wash); }
+
+/* Маркированный список без галочек — там, где пункт не «выполнен», а просто перечислен */
+.bullets li { position: relative; padding-left: 18px; font-size: .9375rem; color: var(--ink-2); }
+.bullets li + li { margin-top: 8px; }
+.bullets li::before {
+  content: ""; position: absolute; left: 0; top: .55em;
+  width: 6px; height: 6px; border-radius: 100px; background: var(--sky);
+}
+
+/* ============================================================
+   ПРОТИВОДЕЙСТВИЕ КОРРУПЦИИ
+   ============================================================ */
+.channels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.channel { background: var(--surface); border: 1px solid var(--line); padding: 20px; }
+.band--surface .channel { background: var(--ground); }
+.channel__label { font-size: .8125rem; color: var(--muted); }
+.channel__value {
+  font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
+  color: var(--sky-deep); margin-top: 6px; word-break: break-word;
+}
+.channel p { font-size: .8125rem; color: var(--muted); margin-top: 8px; }
+
+/* ============================================================
+   ВАКАНСИИ
+   ============================================================ */
+.vacancies { display: grid; gap: 20px; }
+.vacancy {
+  background: var(--surface); border: 1px solid var(--line); padding: 24px 26px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 30px;
+}
+.band--surface .vacancy { background: var(--ground); }
+.vacancy h3 { font-size: 1.125rem; }
+.vacancy__aside { border-left: 1px solid var(--line); padding-left: 26px; }
+.vacancy__aside h4 { font-size: .8125rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-family: var(--font-body); margin-bottom: 10px; }
+.subhead { font-size: .8125rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-family: var(--font-body); font-weight: 700; margin-block: 16px 10px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip { font-size: .8125rem; border: 1px solid var(--line); border-radius: 100px; padding: 4px 12px; color: var(--ink-2); }
+
+/* ============================================================
+   АДАПТИВ
+   ============================================================ */
+@media (max-width: 980px) {
+  .hero__grid { grid-template-columns: 1fr; gap: 36px; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split { grid-template-columns: 1fr; gap: 40px; }
+  .news { grid-template-columns: 1fr; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contacts { grid-template-columns: 1fr; gap: 32px; }
+  .people { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .channels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vacancy { grid-template-columns: 1fr; gap: 22px; }
+  .vacancy__aside { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 20px; }
+  .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+}
+
+@media (max-width: 720px) {
+  .wrap { padding-inline: 18px; }
+  .masthead__contact { display: none; }
+  /* Полное наименование на узком экране ломается в лапшу — показываем короткое */
+  .brand__name { display: none; }
+  .brand__short { display: block; }
+  .callbtn { display: inline-flex; }
+  .masthead__inner { gap: 12px; padding-block: 14px; }
+  .burger { margin-left: 0; padding: 9px 12px; }
+  .brand { gap: 10px; }
+  .brand__mark svg { width: 42px; height: 42px; }
+  .brand__short { font-size: 1rem; }
+  .brand__sub { font-size: .75rem; }
+  .burger {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-left: auto;
+    font: inherit; font-weight: 600;
+    background: var(--surface-2); color: var(--ink);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 9px 14px; cursor: pointer;
+  }
+  .nav { position: static; }
+  .nav__list { display: none; flex-direction: column; padding-block: 6px; }
+  .nav[data-open="true"] .nav__list { display: flex; }
+  .nav__list a { padding: 12px 0; border-bottom: 1px solid var(--line-soft); margin-bottom: 0; }
+  .nav__list a[aria-current="page"] { border-bottom-color: var(--line-soft); }
+  .steps { grid-template-columns: 1fr; }
+  .tiles { grid-template-columns: 1fr; }
+  .people { grid-template-columns: 1fr; }
+  .channels { grid-template-columns: 1fr; }
+  .doc { gap: 12px; padding: 14px 16px; }
+  .vacancy { padding: 22px 20px; }
+  .hero { padding-block: 36px 44px; }
+  .band { padding-block: 44px; }
+  .fact + .fact { padding-left: 0; border-left: 0; }
+  .fact { flex-basis: 100%; padding-block: 12px 0; }
+  .topbar__inner { font-size: .75rem; }
+  .topbar .hide-sm { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ============================================================
+   ВЕРСИЯ ДЛЯ СЛАБОВИДЯЩИХ — переопределяет токены, идёт последней
+   ============================================================ */
+:root[data-a11y="on"] {
+  --ground:    #FFFFFF;
+  --surface:   #FFFFFF;
+  --surface-2: #FFFFFF;
+  --sand:      #FFFFFF;
+  --line:      #000000;
+  --line-soft: #000000;
+  --line-strong: #000000;
+  --ink:       #000000;
+  --ink-2:     #000000;
+  --muted:     #000000;
+  --sky:       #000000;
+  --sky-deep:  #000000;
+  --sky-wash:  #FFFFFF;
+  --apricot:   #000000;
+  --apricot-text: #000000;
+  --apricot-wash: #FFFFFF;
+  --ok:        #000000;
+  --shadow: none;
+  --shadow-lg: none;
+  --radius: 0px;
+}
+:root[data-a11y="on"][data-a11y-scheme="inverse"] {
+  --ground: #000000; --surface: #000000; --surface-2: #000000; --sand: #000000;
+  --line: #FFFFFF; --line-soft: #FFFFFF; --line-strong: #FFFFFF;
+  --ink: #FFFFFF; --ink-2: #FFFFFF; --muted: #FFFFFF;
+  --sky: #FFFFFF; --sky-deep: #FFFFFF; --sky-wash: #000000;
+  --apricot: #FFFF00; --apricot-text: #FFFF00; --apricot-wash: #000000; --ok: #FFFFFF;
+}
+:root[data-a11y="on"] body { font-family: var(--font-body); }
+:root[data-a11y="on"] h1,
+:root[data-a11y="on"] h2,
+:root[data-a11y="on"] h3,
+:root[data-a11y="on"] h4 { font-family: var(--font-body); }
+:root[data-a11y="on"] .card__img,
+:root[data-a11y="on"] .map,
+:root[data-a11y="on"] .brand__mark,
+:root[data-a11y="on"] .tile svg,
+:root[data-a11y="on"] .doc__icon,
+:root[data-a11y="on"] .person__ava,
+:root[data-a11y="on"] .demo { display: none; }
+:root[data-a11y="on"] .topbar,
+:root[data-a11y="on"] .footer { background: var(--ground); color: var(--ink); border-block: 1px solid var(--line); }
+:root[data-a11y="on"] .topbar a,
+:root[data-a11y="on"] .footer a,
+:root[data-a11y="on"] .footer h3,
+:root[data-a11y="on"] .footer__name,
+:root[data-a11y="on"] .footer__bottom { color: var(--ink); opacity: 1; }
+:root[data-a11y="on"] .tool,
+:root[data-a11y="on"] .langs button { background: var(--ground); color: var(--ink); border: 1px solid var(--line); }
+:root[data-a11y="on"] .tool[aria-pressed="true"],
+:root[data-a11y="on"] .langs button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+:root[data-a11y="on"] .btn--primary { background: var(--ink); color: var(--ground); }
+:root[data-a11y="on"] .btn--ghost { border-color: var(--line); color: var(--ink); }
+:root[data-a11y="on"] .tbd { border-style: solid; }
+
+.a11y-bar { display: none; background: var(--ground); border-bottom: 2px solid var(--line); }
+:root[data-a11y="on"] .a11y-bar { display: block; }
+.a11y-bar__inner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; padding-block: 12px; font-size: .9375rem; }
+.a11y-bar__group { display: flex; align-items: center; gap: 8px; }
+.a11y-bar__group > span { font-weight: 600; }
+.a11y-bar button {
+  font: inherit; font-weight: 600;
+  background: var(--ground); color: var(--ink);
+  border: 1px solid var(--line); padding: 8px 16px; min-height: 40px; cursor: pointer;
+}
+.a11y-bar button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main" data-kk="Негізгі мазмұнға өту">Перейти к содержанию</a>
+
+<!-- ============================ ВЕРХНЯЯ ПАНЕЛЬ ============================ -->
+<div class="topbar">
+  <div class="wrap topbar__inner">
+    <span class="hide-sm" data-kk="Астана қаласы әкімдігінің ресми ресурсы">Официальный ресурс акимата города Астаны</span>
+    <a class="hide-sm" href="#" rel="noopener">egov.kz</a>
+    <a class="hide-sm" href="#" rel="noopener">astana.gov.kz</a>
+    <span class="topbar__spacer"></span>
+
+    <div class="langs" role="group" aria-label="Язык сайта">
+      <button type="button" data-lang="ru" aria-pressed="true">РУС</button>
+      <button type="button" data-lang="kk" aria-pressed="false">ҚАЗ</button>
+    </div>
+
+    <button type="button" class="tool" id="a11yToggle" aria-pressed="false">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/>
+        <circle cx="12" cy="12" r="2.6"/>
+      </svg>
+      <span data-kk="Нашар көретіндерге">Для слабовидящих</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============================ ПАНЕЛЬ НАСТРОЕК ДОСТУПНОСТИ ============================ -->
+<div class="a11y-bar">
+  <div class="wrap a11y-bar__inner">
+    <div class="a11y-bar__group">
+      <span data-kk="Қаріп өлшемі">Размер шрифта</span>
+      <button type="button" data-fs="1" aria-pressed="true">A</button>
+      <button type="button" data-fs="1.25" aria-pressed="false">A+</button>
+      <button type="button" data-fs="1.5" aria-pressed="false">A++</button>
+    </div>
+    <div class="a11y-bar__group">
+      <span data-kk="Түс схемасы">Цветовая схема</span>
+      <button type="button" data-scheme="normal" aria-pressed="true" data-kk="Ақ фон">Белый фон</button>
+      <button type="button" data-scheme="inverse" aria-pressed="false" data-kk="Қара фон">Чёрный фон</button>
+    </div>
+    <div class="a11y-bar__group">
+      <button type="button" id="a11yOff" data-kk="Қалыпты нұсқаға оралу">Вернуться к обычной версии</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ ШАПКА ============================ -->
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="brand" href="#">
+      <span class="brand__mark" aria-hidden="true">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+          <circle cx="26" cy="26" r="25" fill="var(--sky-wash)" stroke="var(--sky-deep)" stroke-width="1.5"/>
+          <g stroke="var(--sky-deep)" stroke-width="1.4" stroke-linecap="round">
+            <path d="M26 8v6M26 38v6M8 26h6M38 26h6M13.2 13.2l4.2 4.2M34.6 34.6l4.2 4.2M38.8 13.2l-4.2 4.2M17.4 34.6l-4.2 4.2"/>
+          </g>
+          <circle cx="26" cy="26" r="11" fill="var(--surface)" stroke="var(--sky-deep)" stroke-width="1.5"/>
+          <path d="M26 31.5c-3.4-2.6-5.4-4.3-5.4-6.6a2.9 2.9 0 0 1 5.4-1.6 2.9 2.9 0 0 1 5.4 1.6c0 2.3-2 4-5.4 6.6Z" fill="var(--apricot)"/>
+        </svg>
+      </span>
+      <span>
+        <span class="brand__name" data-kk="Астана қаласы әкімдігінің «№10 психологиялық-медициналық-педагогикалық консультация» КММ">КГУ «Психолого-медико-педагогическая консультация №&nbsp;10»</span>
+        <span class="brand__short" data-kk="«№&nbsp;10 ПМПК» КММ">КГУ «ПМПК №&nbsp;10»</span>
+        <span class="brand__sub" data-kk="Астана қаласы әкімдігі">акимата города Астаны</span>
+      </span>
+    </a>
+
+    <div class="masthead__contact">
+      <div class="masthead__phone">8 (7172) 00-00-00</div>
+      <div class="masthead__hours" data-kk="Дс–Жм, 09:00–18:00 · Түскі үзіліс 13:00–14:00">Пн–Пт, 09:00–18:00 · Обед 13:00–14:00</div>
+    </div>
+
+    <a class="callbtn" href="tel:+77172000000" aria-label="Позвонить в консультацию">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+        <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/>
+      </svg>
+    </a>
+
+    <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="mainnav">
+      <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <span data-kk="Мәзір">Меню</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================ НАВИГАЦИЯ ============================ -->
+<nav class="nav" id="mainnav" aria-label="Основное меню">
+  <div class="wrap">
+    <ul class="nav__list">
+      <li><a href="#" aria-current="page" data-kk="Басты бет">Главная</a></li>
+      <li><a href="#about" data-kk="Біз туралы">О нас</a></li>
+      <li><a href="#services" data-kk="Қызметтер">Услуги</a></li>
+      <li><a href="#news" data-kk="Жаңалықтар">Новости</a></li>
+      <li><a href="#docs" data-kk="Құжаттар">Документы</a></li>
+      <li><a href="#anticorruption" data-kk="Сыбайлас жемқорлыққа қарсы">Противодействие коррупции</a></li>
+      <li><a href="#jobs" data-kk="Бос орындар">Вакансии</a></li>
+      <li><a href="#feedback" data-kk="Кері байланыс">Обратная связь</a></li>
+      <li><a href="#contacts" data-kk="Байланыс">Контакты</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+  <!-- ============================ ГЕРОЙ ============================ -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <p class="eyebrow" data-kk="Мемлекеттік қызмет">Государственная услуга</p>
+        <h1 data-kk="Баланың ерекше білім беру қажеттіліктерін анықтауға көмектесеміз">Помогаем определить особые образовательные потребности ребёнка</h1>
+        <p class="lede" data-kk="Логопед, дефектолог, психолог және дәрігер баланы тексереді және оқыту бағдарламасы бойынша ұсынымдары бар қорытынды береді. 0-ден 18 жасқа дейінгі балаларға тегін.">
+          Логопед, дефектолог, психолог и врач обследуют ребёнка и выдают заключение
+          с рекомендациями по программе обучения. Бесплатно, для детей от 0 до 18 лет.
+        </p>
+
+        <div class="hero__facts">
+          <div class="fact">
+            <div class="fact__n">0–18</div>
+            <div class="fact__t" data-kk="Балалардың жасы">Возраст детей</div>
+          </div>
+          <div class="fact">
+            <div class="fact__n" data-kk="Тегін">Бесплатно</div>
+            <div class="fact__t" data-kk="Мемлекеттік қызмет ретінде">Как государственная услуга</div>
+          </div>
+          <div class="fact">
+            <div class="fact__n" data-kk="2 тіл">2 языка</div>
+            <div class="fact__t" data-kk="Қазақ және орыс тілдерінде қабылдау">Приём на казахском и русском</div>
+          </div>
+          <div class="fact">
+            <div class="fact__n">1 <span data-kk="күн">день</span></div>
+            <div class="fact__t" data-kk="Қорытынды сол күні беріледі">Заключение выдаётся в день приёма</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="booking" aria-labelledby="booking-h">
+        <p class="eyebrow" data-kk="Қабылдауға жазылу">Запись на приём</p>
+        <h2 id="booking-h" style="margin-top:8px" data-kk="birge.astana.kz порталы арқылы">Через портал birge.astana.kz</h2>
+
+        <div class="booking__when">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="flex:0 0 auto;margin-top:2px" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>
+          </svg>
+          <span data-kk="Жазылу <strong>әр айдың 1 және 15 күндері сағат 09:00-де</strong> ашылады. Орындар тез бітеді.">
+            Запись открывается <strong>1 и 15 числа каждого месяца в 09:00</strong>. Места разбирают быстро.
+          </span>
+        </div>
+
+        <a class="btn btn--primary btn--block" href="#" data-kk="Қабылдауға жазылу">Записаться на приём</a>
+        <p class="booking__note" data-kk="Жазылу үшін ЭЦҚ және NCALayer бағдарламасы қажет. Егер қолтаңба болмаса — телефон арқылы қоңырау шалыңыз, көмектесеміз.">
+          Для записи нужна ЭЦП и программа NCALayer. Если подписи нет — позвоните
+          по телефону, мы поможем.
+        </p>
+
+        <hr style="border:0;border-top:1px solid var(--line);margin:20px 0 16px">
+        <a class="btn btn--ghost btn--block" href="#docs-needed" data-kk="Қандай құжаттар қажет">Какие документы нужны</a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============================ ШАГИ ============================ -->
+  <section class="band band--surface" id="how">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Өтініш беру тәртібі">Порядок обращения</p>
+        <h2 data-kk="Қабылдауға қалай жазылуға болады">Как попасть на приём</h2>
+        <p data-kk="Бүкіл жол төрт қадамнан тұрады. Тексеру бір күнде өтеді, қайта келудің қажеті жоқ.">
+          Весь путь — четыре шага. Обследование проходит за один день,
+          повторно приходить не нужно.
+        </p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step__n" data-kk="1-қадам">Шаг 1</div>
+          <h3 data-kk="Құжаттарды жинау">Собрать документы</h3>
+          <p data-kk="Тізім төменде. Барлық құжаттардың түпнұсқасын алыңыз.">Список ниже. Возьмите оригиналы всех документов.</p>
+        </li>
+        <li class="step">
+          <div class="step__n" data-kk="2-қадам">Шаг 2</div>
+          <h3 data-kk="Порталда жазылу">Записаться на портале</h3>
+          <p data-kk="birge.astana.kz, әр айдың 1 және 15 күндері 09:00-де.">birge.astana.kz, 1 и 15 числа месяца в 09:00.</p>
+        </li>
+        <li class="step">
+          <div class="step__n" data-kk="3-қадам">Шаг 3</div>
+          <h3 data-kk="Тексеруден өту">Пройти обследование</h3>
+          <p data-kk="Баланы логопед, дефектолог, психолог және дәрігер қарайды.">Ребёнка смотрят логопед, дефектолог, психолог и врач.</p>
+        </li>
+        <li class="step">
+          <div class="step__n" data-kk="4-қадам">Шаг 4</div>
+          <h3 data-kk="Қорытынды алу">Получить заключение</h3>
+          <p data-kk="Оқыту бағдарламасы бойынша ұсынымдар — сол күні қолыңызға.">Рекомендации по программе обучения — сразу на руки.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================ ДОКУМЕНТЫ + УСЛУГИ ============================ -->
+  <section class="band" id="docs-needed">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-kk="Өзіңізбен бірге ала келіңіз">Возьмите с собой</p>
+        <h2 style="font-size:1.75rem;margin-block:10px 20px" data-kk="Қандай құжаттар қажет">Какие документы нужны</h2>
+        <ul class="checklist">
+          <li data-kk="Баланың туу туралы куәлігі">Свидетельство о рождении ребёнка</li>
+          <li data-kk="Ата-ананың немесе заңды өкілдің жеке куәлігі">Удостоверение личности родителя или законного представителя</li>
+          <li data-kk="Баланың медициналық картасы (026/у нысаны)">Медицинская карта ребёнка (форма 026/у)</li>
+          <li data-kk="Учаскелік дәрігердің көшірмесі">Выписка от участкового врача</li>
+          <li data-kk="Балабақшадан немесе мектептен педагогикалық мінездеме">Педагогическая характеристика из детского сада или школы</li>
+          <li data-kk="Оқушылар үшін — дәптерлер мен баланың жұмыстары">Для школьников — тетради и работы ребёнка</li>
+        </ul>
+        <p style="margin-top:20px;font-size:.9375rem;color:var(--muted)" data-kk="Бір құжат жетіспей тұр ма? Телефон арқылы қоңырау шалыңыз — не істеу керектігін айтамыз.">
+          Не хватает какого-то документа? Позвоните по телефону — подскажем, что делать.
+        </p>
+      </div>
+
+      <div id="services">
+        <p class="eyebrow" data-kk="Жұмыс бағыттары">Направления работы</p>
+        <h2 style="font-size:1.75rem;margin-block:10px 20px" data-kk="Не істейміз">Чем мы занимаемся</h2>
+        <div class="services">
+          <div class="service">
+            <h3 data-kk="Психофизикалық даму диагностикасы">Диагностика психофизического развития</h3>
+            <p data-kk="Мамандардың кешенді тексеруі">Комплексное обследование специалистами</p>
+          </div>
+          <div class="service">
+            <h3 data-kk="Оқу бағдарламасы бойынша ұсынымдар">Рекомендации по программе обучения</h3>
+            <p data-kk="Оқытудың нысаны мен арнайы жағдайларын анықтау">Определение формы обучения и специальных условий</p>
+          </div>
+          <div class="service">
+            <h3 data-kk="Ата-аналарға кеңес беру">Консультирование родителей</h3>
+            <p data-kk="Баланың дамуы және қолдау мәселелері бойынша">По вопросам развития и поддержки ребёнка</p>
+          </div>
+          <div class="service">
+            <h3 data-kk="Арнайы ұйымдарға жолдама">Направление в специальные организации</h3>
+            <p data-kk="Түзету кабинеттері, арнайы сыныптар мен топтар">Кабинеты коррекции, специальные классы и группы</p>
+          </div>
+          <div class="service">
+            <h3 data-kk="Педагогтарға әдістемелік көмек">Методическая помощь педагогам</h3>
+            <p data-kk="Балабақшалар мен мектептердің мамандарына">Специалистам детских садов и школ</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ О НАС ============================ -->
+  <section class="band band--surface" id="about">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Біз туралы">О нас</p>
+        <h2 data-kk="Психологиялық-медициналық-педагогикалық консультация № 10">Психолого-медико-педагогическая консультация № 10</h2>
+        <p data-kk="Туғаннан 18 жасқа дейінгі балаларды кешенді тексеретін және олардың оқуы мен дамуы үшін арнайы жағдайларды айқындайтын мемлекеттік мекеме.">
+          Государственное учреждение, которое проводит комплексное обследование детей
+          с рождения до 18 лет и определяет специальные условия для их обучения и развития.
+        </p>
+      </div>
+
+      <div class="split">
+        <div>
+          <p class="eyebrow" data-kk="Миссиямыз">Наша миссия</p>
+          <p class="lede" style="margin-top:12px" data-kk="Ерекше білім беру қажеттіліктері бар әрбір балаға өзіне қолайлы нысанда білім алуға, ал ата-анасына — түсінікті іс-қимыл жоспарын алуға көмектесу.">
+            Помочь каждому ребёнку с особыми образовательными потребностями получить
+            образование в подходящей ему форме, а родителям — понятный план действий.
+          </p>
+
+          <h3 class="subhead" data-kk="Мақсаттарымыз">Цели</h3>
+          <ul class="bullets">
+            <li data-kk="Балалардың даму бұзылыстарын мүмкіндігінше ерте анықтау">Как можно раньше выявлять нарушения развития у детей</li>
+            <li data-kk="Оқыту нысаны мен арнайы жағдайларды айқындау">Определять форму обучения и специальные условия</li>
+            <li data-kk="Отбасын қолдау: ата-аналар мен заңды өкілдерге кеңес беру">Поддерживать семью: консультировать родителей и законных представителей</li>
+            <li data-kk="Мектептер мен балабақшаларға ұсынымдарды дұрыс қолдануға көмектесу">Помогать школам и детским садам правильно применять рекомендации</li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="eyebrow" data-kk="Функцияларымыз">Функции учреждения</p>
+          <h3 style="font-size:1.25rem;margin-block:10px 18px" data-kk="Не үшін жауап береміз">За что мы отвечаем</h3>
+          <ol class="numlist">
+            <li data-kk="Баланы кешенді психологиялық-медициналық-педагогикалық тексеру">Комплексное психолого-медико-педагогическое обследование ребёнка</li>
+            <li data-kk="Оқыту бағдарламасы бойынша ұсынымдары бар қорытынды беру">Выдача заключения с рекомендациями по программе обучения</li>
+            <li data-kk="Арнайы білім беру ұйымдарына және түзету кабинеттеріне жолдама">Направление в специальные организации образования и кабинеты коррекции</li>
+            <li data-kk="Ата-аналар мен педагогтарға кеңес беру">Консультирование родителей и педагогов</li>
+            <li data-kk="Ауданның білім беру ұйымдарына әдістемелік көмек">Методическая помощь организациям образования района</li>
+            <li data-kk="Ерекше білім беру қажеттіліктері бар балаларды есепке алу">Учёт детей с особыми образовательными потребностями</li>
+          </ol>
+        </div>
+      </div>
+
+      <h3 class="subhead" style="margin-top:44px" data-kk="Мамандар құрамы">Состав специалистов</h3>
+      <div class="people">
+        <div class="person">
+          <div class="person__ava" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3 class="person__role" data-kk="Басшы">Руководитель</h3>
+          <p class="person__name"><span data-kk="Аты-жөні">ФИО</span> <span class="tbd" data-kk="нақтыланады">уточняется</span></p>
+        </div>
+        <div class="person">
+          <div class="person__ava" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3 class="person__role" data-kk="Логопед мұғалім">Учитель-логопед</h3>
+          <p class="person__name" data-kk="Сөйлеу тілінің дамуын тексеру">Обследование речевого развития</p>
+        </div>
+        <div class="person">
+          <div class="person__ava" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3 class="person__role" data-kk="Дефектолог мұғалім">Учитель-дефектолог</h3>
+          <p class="person__name" data-kk="Танымдық саланы тексеру">Обследование познавательной сферы</p>
+        </div>
+        <div class="person">
+          <div class="person__ava" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3 class="person__role" data-kk="Педагог-психолог">Педагог-психолог</h3>
+          <p class="person__name" data-kk="Эмоционалдық-ерік саласы, отбасына қолдау">Эмоционально-волевая сфера, поддержка семьи</p>
+        </div>
+        <div class="person">
+          <div class="person__ava" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3 class="person__role" data-kk="Дәрігер-невропатолог">Врач-невропатолог</h3>
+          <p class="person__name" data-kk="Медициналық бөлім бойынша қорытынды">Заключение по медицинской части</p>
+        </div>
+        <div class="person">
+          <div class="person__ava" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+          <h3 class="person__role" data-kk="Әлеуметтік педагог">Социальный педагог</h3>
+          <p class="person__name" data-kk="Отбасымен және білім беру ұйымдарымен жұмыс">Работа с семьёй и организациями образования</p>
+        </div>
+      </div>
+
+      <div class="note note--sky" style="margin-top:28px">
+        <p data-kk="Мамандардың аты-жөні, лауазымдары, санаттары мен фотосуреттері тапсырыс берушіден алынғаннан кейін толтырылады. Блок CMS арқылы өңделеді.">
+          ФИО, должности, категории и фотографии специалистов заполняются после получения
+          данных от заказчика. Блок редактируется через CMS.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ НОВОСТИ ============================ -->
+  <section class="band" id="news">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Жаңалықтар мен оқиғалар">Новости и события</p>
+        <h2 data-kk="Консультация өмірінен">Из жизни консультации</h2>
+      </div>
+
+      <div class="news">
+        <article class="card">
+          <div class="card__img" aria-hidden="true"></div>
+          <div class="card__body">
+            <div class="card__date" data-kk="12 тамыз 2026">12 августа 2026</div>
+            <h3 data-kk="Мектеп жасына дейінгі балалар ата-аналарына арналған семинар">Семинар для родителей дошкольников</h3>
+            <p data-kk="Мамандар балада сөйлеу дамуының кешеуілдеуін уақытында қалай байқауға болатынын айтты.">Специалисты рассказали, как вовремя заметить задержку речевого развития у ребёнка.</p>
+            <a class="card__more" href="#" data-kk="Толығырақ →">Читать далее →</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__img" aria-hidden="true"></div>
+          <div class="card__body">
+            <div class="card__date" data-kk="30 шілде 2026">30 июля 2026</div>
+            <h3 data-kk="Тамызға жазылу 1 тамызда ашылады">Запись на август откроется 1 августа</h3>
+            <p data-kk="Порталда жазылу сағат 09:00-де басталады. Алдын ала ЭЦҚ дайындаңыз.">Запись на портале стартует в 09:00. Подготовьте ЭЦП заранее.</p>
+            <a class="card__more" href="#" data-kk="Толығырақ →">Читать далее →</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__img" aria-hidden="true"></div>
+          <div class="card__body">
+            <div class="card__date" data-kk="18 маусым 2026">18 июня 2026</div>
+            <h3 data-kk="Инклюзивті білім беру бойынша педагогтарға арналған кеңес">Совещание для педагогов по инклюзии</h3>
+            <p data-kk="Ауданның мектептері мен балабақшаларының мамандары ұсынымдарды талқылады.">Специалисты школ и садов района обсудили работу с рекомендациями.</p>
+            <a class="card__more" href="#" data-kk="Толығырақ →">Читать далее →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ДОКУМЕНТЫ ============================
+       Каждая строка — заготовка под файл из CMS: заголовок, формат, вес, дата.
+       Иконки декоративные, вся строка целиком — одна ссылка на скачивание. -->
+  <section class="band band--surface" id="docs">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Құжаттар">Документы</p>
+        <h2 data-kk="Нормативтік база және мекеме құжаттары">Нормативная база и документы учреждения</h2>
+        <p data-kk="Барлық құжаттарды жүктеп алуға болады. Бөлім CMS арқылы өңделеді: жаңа бұйрықтар мен есептер әзірлеушінің қатысуынсыз қосылады.">
+          Все документы доступны для скачивания. Раздел редактируется через CMS:
+          новые приказы и отчёты добавляются без участия разработчика.
+        </p>
+      </div>
+
+      <div class="docgroup">
+        <h3 class="docgroup__title" data-kk="Қазақстан Республикасының нормативтік құқықтық актілері">Нормативные правовые акты Республики Казахстан</h3>
+        <div class="doclist">
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title" data-kk="«Білім туралы» Қазақстан Республикасының Заңы">Закон Республики Казахстан «Об образовании»</span>
+              <span class="doc__meta" data-kk="PDF · 1,4 МБ · қолданыстағы редакция">PDF · 1,4 МБ · действующая редакция</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title" data-kk="«Кемтар балаларды әлеуметтік және медициналық-педагогикалық түзеу арқылы қолдау туралы» ҚР Заңы">Закон РК «О социальной и медико-педагогической коррекционной поддержке детей с ограниченными возможностями»</span>
+              <span class="doc__meta" data-kk="PDF · 640 КБ · қолданыстағы редакция">PDF · 640 КБ · действующая редакция</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title" data-kk="«Қазақстан Республикасындағы баланың құқықтары туралы» ҚР Заңы">Закон РК «О правах ребёнка в Республике Казахстан»</span>
+              <span class="doc__meta" data-kk="PDF · 520 КБ · қолданыстағы редакция">PDF · 520 КБ · действующая редакция</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title"><span data-kk="Психологиялық-медициналық-педагогикалық консультациялар қызметінің қағидаларын бекіту туралы ҚР Оқу-ағарту министрлігінің бұйрығы">Приказ Министерства просвещения РК об утверждении правил деятельности психолого-медико-педагогических консультаций</span> <span class="tbd" data-kk="нөмірі мен күні нақтыланады">номер и дата уточняются</span></span>
+              <span class="doc__meta" data-kk="PDF · 380 КБ">PDF · 380 КБ</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="docgroup">
+        <h3 class="docgroup__title" data-kk="Мемлекеттік көрсетілетін қызмет">Государственная услуга</h3>
+        <div class="doclist">
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title" data-kk="«Туғаннан он сегіз жасқа дейінгі балаларды кешенді психологиялық-медициналық-педагогикалық тексеруден өткізу» мемлекеттік көрсетілетін қызмет стандарты">Стандарт государственной услуги «Проведение комплексного психолого-медико-педагогического обследования детей с рождения до восемнадцати лет»</span>
+              <span class="doc__meta" data-kk="PDF · 210 КБ">PDF · 210 КБ</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title" data-kk="Мемлекеттік көрсетілетін қызмет регламенті: мерзімдер, кезеңдер, бас тарту негіздері">Регламент оказания государственной услуги: сроки, этапы, основания для отказа</span>
+              <span class="doc__meta" data-kk="PDF · 180 КБ">PDF · 180 КБ</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title" data-kk="ПМПК қорытындысының нысаны — ата-аналарға арналған үлгі">Форма заключения ПМПК — образец для родителей</span>
+              <span class="doc__meta" data-kk="PDF · 96 КБ">PDF · 96 КБ</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="docgroup">
+        <h3 class="docgroup__title" data-kk="Мекеме құжаттары">Документы учреждения</h3>
+        <div class="doclist">
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title"><span data-kk="Астана қаласы әкімдігінің «№ 10 ПМПК» КММ жарғысы">Устав КГУ «ПМПК № 10» акимата города Астаны</span> <span class="tbd" data-kk="файл нақтыланады">файл уточняется</span></span>
+              <span class="doc__meta">PDF</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title"><span data-kk="Мамандардың қабылдау кестесі">График приёма специалистов</span> <span class="tbd" data-kk="файл нақтыланады">файл уточняется</span></span>
+              <span class="doc__meta">PDF</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+
+          <a class="doc" href="#">
+            <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+            </svg>
+            <span class="doc__body">
+              <span class="doc__title"><span data-kk="2025 жылғы қызмет туралы жылдық есеп">Годовой отчёт о деятельности за 2025 год</span> <span class="tbd" data-kk="файл нақтыланады">файл уточняется</span></span>
+              <span class="doc__meta">PDF</span>
+            </span>
+            <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:28px">
+        <h3 data-kk="Макеттегі тізім — алдын ала">Список в макете — предварительный</h3>
+        <p data-kk="Құжаттардың нақты атауларын, нөмірлерін, редакцияларын және файлдардың өзін тапсырыс беруші ұсынады. Макет бөлімнің қалай көрінетінін және CMS-те қалай толтырылатынын көрсетеді.">
+          Точные названия, номера, редакции и сами файлы документов предоставляет заказчик.
+          Макет показывает, как раздел выглядит и как он будет заполняться в CMS.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ПРОТИВОДЕЙСТВИЕ КОРРУПЦИИ ============================
+       Обязательный раздел госсайта РК. Главное здесь — каналы обращения:
+       выносим их наверх крупным шрифтом, до текстов и отчётов. -->
+  <section class="band" id="anticorruption">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Ашықтық">Открытость</p>
+        <h2 data-kk="Сыбайлас жемқорлыққа қарсы іс-қимыл">Противодействие коррупции</h2>
+        <p data-kk="Консультацияның барлық қызметі тегін. Қабылдау, қорытынды немесе кезекті жылдамдату үшін ақша, сыйлық немесе қызмет талап ету — сыбайлас жемқорлық құқық бұзушылық. Бізге немесе уәкілетті органға хабарлаңыз.">
+          Все услуги консультации бесплатны. Требование денег, подарков или услуг
+          за приём, заключение или ускорение записи — коррупционное правонарушение.
+          Сообщите нам или в уполномоченный орган.
+        </p>
+      </div>
+
+      <div class="channels">
+        <div class="channel">
+          <div class="channel__label" data-kk="Мекеменің сенім телефоны">Телефон доверия учреждения</div>
+          <div class="channel__value">8 (7172) 00-00-00 <span class="tbd" data-kk="нақтыланады">уточняется</span></div>
+          <p data-kk="Жұмыс уақытында, жасырын түрде">В рабочие часы, анонимно</p>
+        </div>
+
+        <div class="channel">
+          <div class="channel__label" data-kk="Электрондық пошта">Электронная почта</div>
+          <div class="channel__value">pmpk10@edu.kz <span class="tbd" data-kk="нақтыланады">уточняется</span></div>
+          <p data-kk="Хатты басшы жеке өзі оқиды">Письмо читает лично руководитель</p>
+        </div>
+
+        <div class="channel">
+          <div class="channel__label" data-kk="Сыбайлас жемқорлыққа қарсы іс-қимыл агенттігі">Агентство РК по противодействию коррупции</div>
+          <div class="channel__value">1424</div>
+          <p data-kk="Бірыңғай call-орталық, тәулік бойы">Единый call-центр, круглосуточно</p>
+        </div>
+
+        <div class="channel">
+          <div class="channel__label" data-kk="Өтініштер порталы">Портал обращений</div>
+          <div class="channel__value">e-otinish.kz</div>
+          <p data-kk="Ресми өтініш, жауап заңда белгіленген мерзімде">Официальное обращение, ответ в установленный законом срок</p>
+        </div>
+      </div>
+
+      <div class="split" style="margin-top:44px">
+        <div class="note">
+          <h3 data-kk="Ата-аналарға жаднама">Памятка для родителей</h3>
+          <ul class="bullets" style="margin-top:12px">
+            <li data-kk="Тексеру, қорытынды және кеңес беру тегін жүргізіледі.">Обследование, заключение и консультации проводятся бесплатно.</li>
+            <li data-kk="Мамандар ақшаны, сыйлықтарды және қызметтерді ешқандай нысанда қабылдамайды.">Специалисты не принимают деньги, подарки и услуги ни в какой форме.</li>
+            <li data-kk="Қорытынды тексеру нәтижесі бойынша беріледі. Оны «сатып алуға» немесе өтініш бойынша өзгертуге болмайды.">Заключение выдаётся по результатам обследования. Его нельзя «купить» или изменить по просьбе.</li>
+            <li data-kk="Қабылдау кезегін birge.astana.kz порталы қалыптастырады — консультация қызметкерлері оған әсер ете алмайды.">Очередь на приём формирует портал birge.astana.kz — сотрудники консультации на неё не влияют.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="subhead" style="margin-top:0" data-kk="Есептер мен жоспарлар">Отчёты и планы</h3>
+          <div class="doclist">
+            <a class="doc" href="#">
+              <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+              </svg>
+              <span class="doc__body">
+                <span class="doc__title"><span data-kk="2025 жылғы сыбайлас жемқорлыққа қарсы қабылданған шаралар туралы есеп">Отчёт о принятых мерах по противодействию коррупции за 2025 год</span> <span class="tbd" data-kk="файл нақтыланады">файл уточняется</span></span>
+                <span class="doc__meta">PDF</span>
+              </span>
+              <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+              </svg>
+            </a>
+
+            <a class="doc" href="#">
+              <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+              </svg>
+              <span class="doc__body">
+                <span class="doc__title"><span data-kk="2026 жылға арналған сыбайлас жемқорлыққа қарсы іс-шаралар жоспары">План антикоррупционных мероприятий на 2026 год</span> <span class="tbd" data-kk="файл нақтыланады">файл уточняется</span></span>
+                <span class="doc__meta">PDF</span>
+              </span>
+              <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+              </svg>
+            </a>
+
+            <a class="doc" href="#">
+              <svg class="doc__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>
+              </svg>
+              <span class="doc__body">
+                <span class="doc__title" data-kk="«Сыбайлас жемқорлыққа қарсы іс-қимыл туралы» 2015 жылғы 18 қарашадағы № 410-V ҚР Заңы">Закон РК «О противодействии коррупции» от 18 ноября 2015 года № 410-V</span>
+                <span class="doc__meta" data-kk="PDF · 720 КБ · қолданыстағы редакция">PDF · 720 КБ · действующая редакция</span>
+              </span>
+              <svg class="doc__dl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>
+              </svg>
+            </a>
+          </div>
+
+          <p style="margin-top:16px;font-size:.875rem;color:var(--muted)" data-kk="Өтінішті жасырын да қалдыруға болады. Бірақ жауап қажет болса, байланыс деректеріңізді қалдырыңыз.">
+            Обращение можно оставить анонимно. Но если вам нужен ответ — оставьте контакты.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ВАКАНСИИ ============================ -->
+  <section class="band band--surface" id="jobs">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Бізде жұмыс">Работа у нас</p>
+        <h2 data-kk="Бос жұмыс орындары">Вакансии</h2>
+        <p data-kk="Өз жұмысының нәтижесін нақты баланың тағдырынан көретін мамандарды іздейміз. Ашық орындар тізімі CMS арқылы жаңартылады.">
+          Ищем специалистов, которые видят результат своей работы в судьбе конкретного
+          ребёнка. Список открытых позиций обновляется через CMS.
+        </p>
+      </div>
+
+      <div class="vacancies">
+        <article class="vacancy">
+          <div>
+            <h3 data-kk="Дефектолог мұғалім">Учитель-дефектолог</h3>
+            <div class="chips">
+              <span class="chip" data-kk="Толық жұмыспен қамту">Полная занятость</span>
+              <span class="chip" data-kk="Тәжірибе 1 жылдан">Опыт от 1 года</span>
+              <span class="chip" data-kk="Жалақы бірыңғай тарифтік кесте бойынша">Оклад по единой тарифной сетке</span>
+            </div>
+            <h4 class="subhead" data-kk="Талаптар">Требования</h4>
+            <ul class="bullets">
+              <li data-kk="«Дефектология» немесе «Арнайы педагогика» мамандығы бойынша жоғары педагогикалық білім">Высшее педагогическое образование по специальности «Дефектология» или «Специальная педагогика»</li>
+              <li data-kk="Мектепке дейінгі және мектеп жасындағы балалармен жұмыс тәжірибесі">Опыт работы с детьми дошкольного и школьного возраста</li>
+              <li data-kk="Қазақ және орыс тілдерін еркін меңгеру">Свободное владение казахским и русским языками</li>
+            </ul>
+          </div>
+          <div class="vacancy__aside">
+            <h4 data-kk="Не ұсынамыз">Что предлагаем</h4>
+            <ul class="bullets">
+              <li data-kk="Дс–Жм, 09:00–18:00, ауысымсыз">Пн–Пт, 09:00–18:00, без смен</li>
+              <li data-kk="Мекеме есебінен біліктілікті арттыру курстары">Курсы повышения квалификации за счёт учреждения</li>
+              <li data-kk="Тәжірибелі мамандар тобындағы жұмыс">Работа в команде опытных специалистов</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="vacancy">
+          <div>
+            <h3 data-kk="Логопед мұғалім">Учитель-логопед</h3>
+            <div class="chips">
+              <span class="chip" data-kk="Толық жұмыспен қамту">Полная занятость</span>
+              <span class="chip" data-kk="Тәжірибесі жоқ мамандар да қаралады">Рассмотрим и без опыта</span>
+              <span class="chip" data-kk="Жалақы бірыңғай тарифтік кесте бойынша">Оклад по единой тарифной сетке</span>
+            </div>
+            <h4 class="subhead" data-kk="Талаптар">Требования</h4>
+            <ul class="bullets">
+              <li data-kk="«Логопедия» мамандығы бойынша жоғары педагогикалық білім">Высшее педагогическое образование по специальности «Логопедия»</li>
+              <li data-kk="Сөйлеу тілінің дамуын диагностикалау әдістемелерін меңгеру">Владение методиками диагностики речевого развития</li>
+              <li data-kk="Қазақ және орыс тілдерін еркін меңгеру">Свободное владение казахским и русским языками</li>
+            </ul>
+          </div>
+          <div class="vacancy__aside">
+            <h4 data-kk="Не ұсынамыз">Что предлагаем</h4>
+            <ul class="bullets">
+              <li data-kk="Тәлімгерлікпен кіру кезеңі">Период адаптации с наставником</li>
+              <li data-kk="Диагностикалық материалдары бар жабдықталған кабинет">Оборудованный кабинет с диагностическими материалами</li>
+              <li data-kk="Педагогикалық өтілге есептеледі">Засчитывается в педагогический стаж</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="vacancy">
+          <div>
+            <h3 data-kk="Педагог-психолог">Педагог-психолог</h3>
+            <div class="chips">
+              <span class="chip" data-kk="0,5 мөлшерлеме">0,5 ставки</span>
+              <span class="chip" data-kk="Тәжірибе 2 жылдан">Опыт от 2 лет</span>
+              <span class="chip" data-kk="Жалақы бірыңғай тарифтік кесте бойынша">Оклад по единой тарифной сетке</span>
+            </div>
+            <h4 class="subhead" data-kk="Талаптар">Требования</h4>
+            <ul class="bullets">
+              <li data-kk="«Педагогика және психология» мамандығы бойынша жоғары білім">Высшее образование по специальности «Педагогика и психология»</li>
+              <li data-kk="Ерекше білім беру қажеттіліктері бар балалармен жұмыс тәжірибесі">Опыт работы с детьми с особыми образовательными потребностями</li>
+              <li data-kk="Ата-аналармен әңгімелесу дағдысы">Навык беседы с родителями</li>
+            </ul>
+          </div>
+          <div class="vacancy__aside">
+            <h4 data-kk="Не ұсынамыз">Что предлагаем</h4>
+            <ul class="bullets">
+              <li data-kk="Икемді кесте">Гибкий график</li>
+              <li data-kk="Супервизия және әдістемелік қолдау">Супервизия и методическая поддержка</li>
+              <li data-kk="Толық мөлшерлемеге ауысу мүмкіндігі">Возможность перейти на полную ставку</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+
+      <div class="note note--sky" style="margin-top:28px">
+        <h3 data-kk="Қалай өтініш беруге болады">Как откликнуться</h3>
+        <p data-kk="Түйіндемеңізді «Бос орын» тақырыбымен мекеменің поштасына жіберіңіз немесе төмендегі кері байланыс нысанын толтырыңыз. Барлық өтінішке 5 жұмыс күні ішінде жауап береміз. Құжаттарды қабылдау мерзімдері мен ресімдеу шарттарын телефон арқылы нақтылауға болады.">
+          Отправьте резюме на почту учреждения с темой «Вакансия» или заполните форму
+          обратной связи ниже. Отвечаем на все отклики в течение 5 рабочих дней.
+          Сроки приёма документов и условия оформления можно уточнить по телефону.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ПОЛЕЗНЫЕ ССЫЛКИ ============================
+       Внешние госресурсы: обязательный атрибут государственного сайта РК -->
+  <section class="band">
+    <div class="wrap">
+      <div class="band__head">
+        <p class="eyebrow" data-kk="Пайдалы сілтемелер">Полезные ссылки</p>
+        <h2 data-kk="Мемлекеттік ресурстар">Государственные ресурсы</h2>
+      </div>
+
+      <div class="tiles">
+        <a class="tile" href="#" rel="noopener">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/>
+          </svg>
+          <h3>egov.kz</h3>
+          <p data-kk="Мемлекеттік қызметтер порталы">Портал государственных услуг</p>
+        </a>
+
+        <a class="tile" href="#" rel="noopener">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/>
+          </svg>
+          <h3>birge.astana.kz</h3>
+          <p data-kk="Қабылдауға жазылу">Запись на приём</p>
+        </a>
+
+        <a class="tile" href="#" rel="noopener">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M4 6h7a2 2 0 0 1 2 2v11a2 2 0 0 0-2-2H4Z"/><path d="M20 6h-7a2 2 0 0 0-2 2v11a2 2 0 0 1 2-2h7Z"/>
+          </svg>
+          <h3>special-edu.kz</h3>
+          <p data-kk="Арнайы және инклюзивті білім беру ресурстары">Ресурсы по специальному и инклюзивному образованию</p>
+        </a>
+
+        <a class="tile" href="#" rel="noopener">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/>
+          </svg>
+          <h3>astana.gov.kz</h3>
+          <p data-kk="Астана қаласының әкімдігі">Акимат города Астаны</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ КОНТАКТЫ + ФОРМА ============================ -->
+  <section class="band band--surface" id="contacts">
+    <div class="wrap contacts">
+      <div>
+        <p class="eyebrow" data-kk="Байланыс деректері">Контакты</p>
+        <h2 style="font-size:1.75rem;margin-block:10px 24px" data-kk="Бізді қалай табуға болады">Как нас найти</h2>
+
+        <dl class="dl">
+          <dt data-kk="Мекенжай">Адрес</dt>
+          <dd>г. Астана, <span class="tbd" data-kk="мекенжай нақтыланады">адрес уточняется</span></dd>
+
+          <dt data-kk="Телефон">Телефон</dt>
+          <dd>8 (7172) 00-00-00 <span class="tbd" data-kk="нақтыланады">уточняется</span></dd>
+
+          <dt>WhatsApp</dt>
+          <dd>+7 (700) 000-00-00 <span class="tbd" data-kk="нақтыланады">уточняется</span></dd>
+
+          <dt data-kk="Электрондық пошта">Эл. почта</dt>
+          <dd>pmpk10@edu.kz <span class="tbd" data-kk="нақтыланады">уточняется</span></dd>
+
+          <dt data-kk="Жұмыс уақыты">Часы работы</dt>
+          <dd data-kk="Дс–Жм 09:00–18:00, түскі үзіліс 13:00–14:00">Пн–Пт 09:00–18:00, обед 13:00–14:00</dd>
+        </dl>
+
+        <h3 style="font-size:1.125rem;margin-block:32px 14px" id="feedback" data-kk="Кері байланыс">Обратная связь</h3>
+        <form class="form" novalidate>
+          <!-- Сводка ошибок: фокус переводится сюда после неудачной отправки,
+               каждый пункт — ссылка на конкретное поле -->
+          <div class="errsum" id="errsum" role="alert" tabindex="-1" aria-labelledby="errsum-h">
+            <h4 id="errsum-h" data-kk="Форманы жіберу мүмкін болмады">Не удалось отправить форму</h4>
+            <ul id="errsum-list"></ul>
+          </div>
+
+          <div class="field">
+            <label for="f-name" data-kk="Аты-жөніңіз">Ваше имя</label>
+            <input id="f-name" name="name" type="text" required autocomplete="name"
+                   aria-describedby="f-name-err">
+            <p class="field__err" id="f-name-err" data-kk="Атыңызды енгізіңіз">Введите ваше имя</p>
+          </div>
+
+          <div class="field">
+            <label for="f-mail" data-kk="Эл. пошта немесе телефон">Эл. почта или телефон</label>
+            <input id="f-mail" name="contact" type="text" required autocomplete="email"
+                   aria-describedby="f-mail-hint f-mail-err">
+            <p id="f-mail-hint" style="font-size:.8125rem;color:var(--muted)" data-kk="Жауапты осы жерге жібереміз">Сюда мы пришлём ответ</p>
+            <p class="field__err" id="f-mail-err" data-kk="Пошта немесе телефон нөмірін енгізіңіз">Введите почту или номер телефона</p>
+          </div>
+
+          <div class="field">
+            <label for="f-msg" data-kk="Сұрағыңыз">Ваш вопрос</label>
+            <textarea id="f-msg" name="message" required aria-describedby="f-msg-err"></textarea>
+            <p class="field__err" id="f-msg-err" data-kk="Сұрағыңызды жазыңыз">Напишите ваш вопрос</p>
+          </div>
+
+          <button class="btn btn--primary" type="submit" data-kk="Сұрақ жіберу">Отправить вопрос</button>
+
+          <p class="formstatus" id="formstatus" role="status" data-kk="Сұрақ жіберілді. Жауабын күтіңіз.">Вопрос отправлен. Ожидайте ответа.</p>
+          <p style="font-size:.8125rem;color:var(--muted)" data-kk="Жауап 3 жұмыс күні ішінде келеді.">Ответ придёт в течение 3 рабочих дней.</p>
+        </form>
+      </div>
+
+      <div class="map">
+        <svg viewBox="0 0 640 520" role="img" aria-label="Схема расположения консультации на карте города">
+          <rect width="640" height="520" fill="var(--surface-2)"/>
+          <g stroke="var(--line)" stroke-width="1" opacity=".55">
+            <path d="M0 90h640M0 200h640M0 320h640M0 430h640M110 0v520M260 0v520M400 0v520M530 0v520"/>
+          </g>
+          <g fill="var(--line-soft)" opacity=".8">
+            <rect x="20" y="110" width="70" height="70"/><rect x="130" y="20" width="110" height="60"/>
+            <rect x="290" y="220" width="90" height="80"/><rect x="430" y="100" width="80" height="80"/>
+            <rect x="550" y="340" width="70" height="70"/><rect x="140" y="350" width="100" height="60"/>
+          </g>
+          <path d="M0 260h640" stroke="var(--sky)" stroke-width="10" opacity=".35"/>
+          <path d="M320 0v520" stroke="var(--sky)" stroke-width="10" opacity=".35"/>
+          <g transform="translate(320 260)">
+            <circle r="34" fill="var(--apricot)" opacity=".18"/>
+            <path d="M0-26c-8.8 0-16 7.2-16 16 0 11.6 16 26 16 26s16-14.4 16-26c0-8.8-7.2-16-16-16Z" fill="var(--apricot)"/>
+            <circle cy="-10" r="6" fill="var(--surface)"/>
+          </g>
+          <text x="320" y="316" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="15" font-weight="600" fill="var(--ink-2)">ПМПК №10</text>
+          <text x="320" y="338" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" fill="var(--muted)">здесь будет карта 2ГИС</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ ПОДВАЛ ============================ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__name" data-kk="Астана қаласы әкімдігінің «№10 психологиялық-медициналық-педагогикалық консультация» КММ">
+          КГУ «Психолого-медико-педагогическая<br>консультация №&nbsp;10»<br>акимата города Астаны
+        </div>
+        <p style="margin-top:14px;font-size:.875rem;color:#90B4C2" data-kk="Ерекше білім беру қажеттіліктері бар балаларға және олардың отбасыларына көмек көрсетеміз.">
+          Помогаем детям с особыми образовательными потребностями и их семьям.
+        </p>
+      </div>
+
+      <div>
+        <h3 data-kk="Бөлімдер">Разделы</h3>
+        <ul>
+          <li><a href="#about" data-kk="Біз туралы">О нас</a></li>
+          <li><a href="#services" data-kk="Қызметтер">Услуги</a></li>
+          <li><a href="#docs" data-kk="Құжаттар">Документы</a></li>
+          <li><a href="#news" data-kk="Жаңалықтар">Новости</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 data-kk="Ашықтық">Открытость</h3>
+        <ul>
+          <li><a href="#anticorruption" data-kk="Сыбайлас жемқорлыққа қарсы">Противодействие коррупции</a></li>
+          <li><a href="#jobs" data-kk="Бос орындар">Вакансии</a></li>
+          <li><a href="#feedback" data-kk="Кері байланыс">Обратная связь</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 data-kk="Мемлекеттік ресурстар">Госресурсы</h3>
+        <ul>
+          <li><a href="#">egov.kz</a></li>
+          <li><a href="#">astana.gov.kz</a></li>
+          <li><a href="#">birge.astana.kz</a></li>
+          <li><a href="#">special-edu.kz</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span data-kk="© 2026 Астана қаласы әкімдігінің «№10 ПМПК» КММ">© 2026 КГУ «ПМПК № 10» акимата города Астаны</span>
+      <span class="tbd" style="background:transparent;color:#FFC48A;border-color:#FFC48A" data-kk="БСН нақтыланады">БИН уточняется</span>
+    </div>
+  </div>
+</footer>
+
+<div class="demo" data-kk="Демо-макет · 2-нұсқа">Демо-макет · версия 2</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+
+  /* ---------- Переключение языка RU / KZ ----------
+     Каждый переводимый узел несёт data-kk с казахским текстом.
+     Русский вариант сохраняется в data-ru при первом переключении. */
+  function setLang(lang) {
+    var nodes = document.querySelectorAll("[data-kk]");
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (!el.hasAttribute("data-ru")) el.setAttribute("data-ru", el.innerHTML);
+      el.innerHTML = el.getAttribute(lang === "kk" ? "data-kk" : "data-ru");
+    }
+    root.setAttribute("lang", lang);
+    var btns = document.querySelectorAll("[data-lang]");
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].setAttribute("aria-pressed", String(btns[j].getAttribute("data-lang") === lang));
+    }
+  }
+
+  document.addEventListener("click", function (e) {
+    var langBtn = e.target.closest("[data-lang]");
+    if (langBtn) { setLang(langBtn.getAttribute("data-lang")); return; }
+
+    /* ---------- Размер шрифта ---------- */
+    var fsBtn = e.target.closest("[data-fs]");
+    if (fsBtn) {
+      root.style.setProperty("--fs", fsBtn.getAttribute("data-fs"));
+      press("[data-fs]", fsBtn);
+      return;
+    }
+
+    /* ---------- Цветовая схема в версии для слабовидящих ---------- */
+    var schemeBtn = e.target.closest("[data-scheme]");
+    if (schemeBtn) {
+      root.setAttribute("data-a11y-scheme", schemeBtn.getAttribute("data-scheme"));
+      press("[data-scheme]", schemeBtn);
+      return;
+    }
+  });
+
+  function press(selector, active) {
+    var group = document.querySelectorAll(selector);
+    for (var i = 0; i < group.length; i++) {
+      group[i].setAttribute("aria-pressed", String(group[i] === active));
+    }
+  }
+
+  /* ---------- Версия для слабовидящих ---------- */
+  var a11yToggle = document.getElementById("a11yToggle");
+  var a11yOff = document.getElementById("a11yOff");
+
+  function setA11y(on) {
+    if (on) {
+      root.setAttribute("data-a11y", "on");
+      root.setAttribute("data-a11y-scheme", root.getAttribute("data-a11y-scheme") || "normal");
+    } else {
+      root.removeAttribute("data-a11y");
+      root.style.setProperty("--fs", "1");
+    }
+    a11yToggle.setAttribute("aria-pressed", String(on));
+  }
+
+  a11yToggle.addEventListener("click", function () {
+    setA11y(root.getAttribute("data-a11y") !== "on");
+  });
+  a11yOff.addEventListener("click", function () { setA11y(false); });
+
+  /* ---------- Мобильное меню ---------- */
+  var burger = document.getElementById("burger");
+  var nav = document.getElementById("mainnav");
+  burger.addEventListener("click", function () {
+    var open = nav.getAttribute("data-open") === "true";
+    nav.setAttribute("data-open", String(!open));
+    burger.setAttribute("aria-expanded", String(!open));
+  });
+  nav.addEventListener("click", function (e) {
+    if (e.target.tagName === "A" && window.innerWidth <= 720) {
+      nav.setAttribute("data-open", "false");
+      burger.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  /* ---------- Форма обратной связи ----------
+     Ошибка сообщается тремя способами сразу: рамкой, текстом под полем и
+     сводкой в начале формы. Одного цвета недостаточно (WCAG 1.4.1). */
+  var form = document.querySelector(".form");
+  var errsum = document.getElementById("errsum");
+  var errsumList = document.getElementById("errsum-list");
+  var formstatus = document.getElementById("formstatus");
+
+  function fieldsOf() {
+    return form.querySelectorAll("input[required], textarea[required]");
+  }
+
+  /* Помечает одно поле; возвращает true, если поле заполнено верно */
+  function validateField(input) {
+    var ok = !!input.value.trim();
+    var err = document.getElementById(input.id + "-err");
+    input.setAttribute("aria-invalid", String(!ok));
+    if (err) err.setAttribute("data-shown", String(!ok));
+    return ok;
+  }
+
+  /* Проверка на blur, а не только по сабмиту — ошибку видно сразу */
+  var toCheck = fieldsOf();
+  for (var k = 0; k < toCheck.length; k++) {
+    toCheck[k].addEventListener("blur", function (ev) { validateField(ev.target); });
+    /* Как только пользователь исправляет поле — снимаем метку ошибки */
+    toCheck[k].addEventListener("input", function (ev) {
+      if (ev.target.getAttribute("aria-invalid") === "true" && ev.target.value.trim()) {
+        validateField(ev.target);
+      }
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fields = fieldsOf();
+    var bad = [];
+    for (var i = 0; i < fields.length; i++) {
+      if (!validateField(fields[i])) bad.push(fields[i]);
+    }
+
+    if (bad.length) {
+      errsumList.innerHTML = "";
+      for (var j = 0; j < bad.length; j++) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = "#" + bad[j].id;
+        a.textContent = document.getElementById(bad[j].id + "-err").textContent;
+        /* Ссылка ведёт прямо в поле, а не просто к якорю */
+        a.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          document.getElementById(this.getAttribute("href").slice(1)).focus();
+        });
+        li.appendChild(a);
+        errsumList.appendChild(li);
+      }
+      errsum.setAttribute("data-shown", "true");
+      errsum.focus();
+      return;
+    }
+
+    errsum.setAttribute("data-shown", "false");
+    formstatus.setAttribute("data-shown", "true");
+    form.querySelector("button[type=submit]").disabled = true;
+  });
+})();
+</script>
+</body>
+</html>
