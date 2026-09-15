@@ -1,0 +1,136 @@
+/* ============================================================
+   Оформление админки. Намеренно скромное и крупное: ею
+   пользуется сотрудник учреждения с рабочего компьютера, а не
+   разработчик. Крупный шрифт, большие поля, заметные кнопки,
+   никаких иконок без подписей.
+   ============================================================ */
+
+:root {
+  --ground: #f4f6f4;
+  --surface: #ffffff;
+  --ink: #0d2833;
+  --ink-2: #33525e;
+  --muted: #5b7078;
+  --line: #d6dede;
+  --sky: #17708f;
+  --sky-deep: #0e4e66;
+  --danger: #9b2c2c;
+  --ok: #2f7a55;
+  --radius: 4px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 16px/1.6 "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+
+a { color: var(--sky-deep); }
+
+.wrap { max-width: 900px; margin-inline: auto; padding: 24px 20px 64px; }
+
+.top {
+  background: var(--sky-deep);
+  color: #fff;
+  padding: 14px 20px;
+}
+.top__inner {
+  max-width: 900px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.top__name { font-weight: 700; }
+.top a { color: #fff; text-decoration: none; opacity: .85; }
+.top a:hover { opacity: 1; text-decoration: underline; }
+.top__spacer { flex: 1; }
+
+h1 { font-size: 1.6rem; margin: 0 0 6px; }
+h2 { font-size: 1.15rem; margin: 28px 0 10px; }
+.lede { color: var(--muted); margin: 0 0 24px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.card + .card { margin-top: 14px; }
+
+.field { display: grid; gap: 6px; margin-bottom: 18px; }
+.field label { font-weight: 600; font-size: .9375rem; }
+.field .hint { font-size: .8125rem; color: var(--muted); }
+
+input[type="text"], input[type="password"], input[type="date"], textarea, select {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid #778f96;
+  border-radius: var(--radius);
+  padding: 11px 13px;
+  min-height: 46px;
+  width: 100%;
+}
+textarea { min-height: 120px; resize: vertical; }
+input:focus, textarea:focus { outline: 2px solid var(--sky); outline-offset: 1px; }
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 20px;
+  min-height: 46px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn--primary { background: var(--sky-deep); color: #fff; }
+.btn--primary:hover { background: var(--sky); }
+.btn--ghost { background: transparent; color: var(--sky-deep); border-color: var(--line); }
+.btn--ghost:hover { background: #eaf1f4; }
+.btn--danger { background: transparent; color: var(--danger); border-color: #e0c0c0; }
+.btn--danger:hover { background: #fbf0f0; }
+.btn[disabled] { opacity: .55; cursor: default; }
+
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+.msg { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; }
+.msg--ok { background: #e6f2ea; color: #1d5b3e; border: 1px solid #b6d8c5; }
+.msg--err { background: #fbeaea; color: var(--danger); border: 1px solid #e6bcbc; }
+
+.list { list-style: none; margin: 0; padding: 0; }
+.list li {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.list li + li { margin-top: 8px; }
+.list__main { flex: 1; min-width: 0; }
+.list__date { font-size: .8125rem; color: var(--muted); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.tile {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+}
+.tile:hover { border-color: var(--sky); }
+.tile strong { display: block; font-size: 1.0625rem; }
+.tile span { display: block; margin-top: 6px; font-size: .875rem; color: var(--muted); }
+
+.login { max-width: 400px; margin: 12vh auto; }
