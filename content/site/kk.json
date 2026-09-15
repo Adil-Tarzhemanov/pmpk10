@@ -1,0 +1,46 @@
+{
+  "legalName": "Астана қаласы әкімдігінің «№ 10 психологиялық-медициналық-педагогикалық консультация» КММ",
+  "shortName": "«№ 10 ПМПК» КММ",
+  "authority": "Астана қаласы әкімдігі",
+  "address": "Астана қаласы, Сарыарқа ауданы, Шаймерден Қосшығұлұлы көшесі, 23/1, 1-қабат",
+  "addressTbd": false,
+  "geo": {
+    "lat": 51.1697416,
+    "lon": 71.3791755,
+    "zoom": 17,
+    "verified": false
+  },
+  "phone": "8 (778) 090-22-35",
+  "phoneTbd": false,
+  "phoneHref": "+77780902235",
+  "whatsapp": "+7 (778) 090-22-35",
+  "whatsappTbd": false,
+  "email": "pmpk10_as@mail.ru",
+  "emailTbd": false,
+  "hours": "Дс–Жм 09:30–16:50, түскі үзіліс 14:30–15:30. Сенбі мен жексенбі — демалыс",
+  "reception": "Дс–Жм 09:30–14:20, алдын ала жазылу бойынша",
+  "hoursShort": "Қабылдау Дс–Жм 09:30–14:20 · Түскі үзіліс 14:30–15:30",
+  "bookingUrl": "https://birge.astana.kz",
+  "links": [
+    {
+      "label": "egov.kz",
+      "href": "https://egov.kz",
+      "note": "Мемлекеттік қызметтер порталы"
+    },
+    {
+      "label": "birge.astana.kz",
+      "href": "https://birge.astana.kz",
+      "note": "Қабылдауға жазылу"
+    },
+    {
+      "label": "special-edu.kz",
+      "href": "https://special-edu.kz",
+      "note": "Арнайы және инклюзивті білім беру ресурстары"
+    },
+    {
+      "label": "astana.gov.kz",
+      "href": "https://astana.gov.kz",
+      "note": "Астана қаласының әкімдігі"
+    }
+  ]
+}

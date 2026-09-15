@@ -1,0 +1,46 @@
+{
+  "legalName": "КГУ «Психолого-медико-педагогическая консультация № 10»",
+  "shortName": "КГУ «ПМПК № 10»",
+  "authority": "акимата города Астаны",
+  "address": "г. Астана, район Сарыарка, ул. Шаймерден Косшыгулулы, 23/1, 1 этаж",
+  "addressTbd": false,
+  "geo": {
+    "lat": 51.1697416,
+    "lon": 71.3791755,
+    "zoom": 17,
+    "verified": false
+  },
+  "phone": "8 (778) 090-22-35",
+  "phoneTbd": false,
+  "phoneHref": "+77780902235",
+  "whatsapp": "+7 (778) 090-22-35",
+  "whatsappTbd": false,
+  "email": "pmpk10_as@mail.ru",
+  "emailTbd": false,
+  "hours": "Пн–Пт 09:30–16:50, обед 14:30–15:30. Суббота и воскресенье — выходные",
+  "reception": "Пн–Пт 09:30–14:20, по предварительной записи",
+  "hoursShort": "Приём Пн–Пт 09:30–14:20 · Обед 14:30–15:30",
+  "bookingUrl": "https://birge.astana.kz",
+  "links": [
+    {
+      "label": "egov.kz",
+      "href": "https://egov.kz",
+      "note": "Портал государственных услуг"
+    },
+    {
+      "label": "birge.astana.kz",
+      "href": "https://birge.astana.kz",
+      "note": "Запись на приём"
+    },
+    {
+      "label": "special-edu.kz",
+      "href": "https://special-edu.kz",
+      "note": "Ресурсы по специальному и инклюзивному образованию"
+    },
+    {
+      "label": "astana.gov.kz",
+      "href": "https://astana.gov.kz",
+      "note": "Акимат города Астаны"
+    }
+  ]
+}

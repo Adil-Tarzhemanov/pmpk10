@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Что осталось до запуска</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&display=swap">
+<style>
+/* Явные размеры, а не ключевое слово A4: так лист корректно применяет
+   и headless-режим Chrome, которым документ печатается в PDF */
+@page { size: 210mm 297mm; margin: 16mm 15mm 14mm; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "PT Sans", "Segoe UI", Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #16232A;
+  background: #fff;
+}
+
+h1, h2 { font-family: "PT Serif", Georgia, serif; margin: 0; }
+
+/* ---------- Шапка ---------- */
+.head { border-bottom: 2px solid #0E4E66; padding-bottom: 12px; margin-bottom: 18px; }
+.head h1 { font-size: 18pt; line-height: 1.2; color: #0E4E66; }
+.head .org { font-size: 9.5pt; color: #4A626C; margin-top: 5px; }
+.head .date { font-size: 8.5pt; color: #7A8E96; margin-top: 8px; }
+
+.status { font-size: 9.5pt; color: #4A626C; margin-bottom: 22px; }
+.status b { color: #16232A; }
+
+/* ---------- Разделы ---------- */
+.sec { margin-bottom: 20px; break-inside: avoid; }
+.sec h2 {
+  font-size: 11.5pt;
+  color: #0E4E66;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #D3DDE0;
+  margin-bottom: 10px;
+}
+
+/* ---------- Пункты ---------- */
+ul { margin: 0; padding: 0; list-style: none; }
+li {
+  break-inside: avoid;
+  position: relative;
+  padding: 4px 0 4px 18px;
+}
+li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 8px;
+  width: 9px; height: 9px;
+  border: 1.1px solid #8A9DA4;
+}
+li .n { font-size: 9pt; color: #7A8E96; display: block; }
+
+/* Помечаем только то, без чего сайт нельзя открыть для людей.
+   Метка стоит на заголовке пункта, чтобы читалась вместе с ним */
+.blocks .t::after {
+  content: "блокирует запуск";
+  font-size: 7.5pt;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #9B5836;
+  border: 1px solid #D8B49A;
+  border-radius: 2px;
+  padding: 0 4px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* ---------- Подвал ---------- */
+.foot {
+  margin-top: 24px;
+  padding-top: 10px;
+  border-top: 1px solid #D3DDE0;
+  font-size: 8.5pt;
+  color: #7A8E96;
+}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>Что осталось до запуска</h1>
+  <div class="org">Сайт КГУ «Психолого-медико-педагогическая консультация № 10» акимата города Астаны</div>
+  <div class="date">31 августа 2026 года</div>
+</div>
+
+<div class="status">
+  <b>Сделано:</b> сайт собран на Next.js, 26 страниц, обе языковые версии (казахская и русская),
+  восемь разделов по структуре технического задания, версия для слабовидящих, карта сайта и метатеги.
+  Вёрстка соответствует утверждённому макету. Ниже — всё, что отделяет это от боевого запуска.
+</div>
+
+<div class="sec">
+  <h2>1. Данные от заказчицы</h2>
+  <ul>
+    <li class="blocks"><span class="t">Точный юридический адрес, телефоны, WhatsApp, электронная почта</span><span class="n">На сайте 17 мест с пометкой «уточняется» — все они об этом</span></li>
+    <li class="blocks"><span class="t">Полное юридическое наименование и БИН</span><span class="n">Печатаются в шапке и внизу каждой страницы</span></li>
+    <li class="blocks"><span class="t">Пакет нормативных документов в PDF</span><span class="n">13 позиций в разделах «Документы» и «Противодействие коррупции» ждут файлов</span></li>
+    <li><span class="t">ФИО, должности, категории и фотографии специалистов</span><span class="n">Сейчас в карточках только роли и род занятий</span></li>
+    <li><span class="t">Логотип или герб в векторе</span><span class="n">Стоит временная эмблема, нарисованная нами</span></li>
+    <li><span class="t">График приёма специалистов</span></li>
+    <li><span class="t">Телефон доверия и почта для обращений о коррупции</span><span class="n">Может отличаться от основного телефона</span></li>
+    <li><span class="t">Актуальный список вакансий</span><span class="n">Сейчас три позиции, написанные нами как образец</span></li>
+    <li><span class="t">Подтверждение текстов «О нас»: миссия, цели, функции</span><span class="n">Формулировки составлены нами по профилю учреждения</span></li>
+  </ul>
+</div>
+
+<div class="sec">
+  <h2>2. Вопросы, не закрытые по договору</h2>
+  <ul>
+    <li class="blocks"><span class="t">Письменное согласование стека</span><span class="n">Пункт 5 задания требует «JavaScript без фреймворков». Пункт 11 требует согласовать
+      решения до начала работ — этим и закрывается</span></li>
+    <li class="blocks"><span class="t">Доменное имя</span><span class="n">В задании по ошибке указан rgurpo.kz — адрес другого учреждения</span></li>
+    <li><span class="t">Срок: 15 или 20 календарных дней</span><span class="n">Русская и казахская версии задания расходятся в одном и том же пункте</span></li>
+  </ul>
+</div>
+
+<div class="sec">
+  <h2>3. Функциональность, которой ещё нет</h2>
+  <ul>
+    <li><span class="t">Интерактивная карта</span><span class="n">Сейчас схема-заглушка. Адрес известен — Шаймерден Косшыгулулы, 23/1. Нужны точные
+      координаты и решение: 2ГИС или Google Maps — задание разрешает оба</span></li>
+    <li><span class="t">Слайдер изображений</span><span class="n">В задании стоит «по необходимости». Решить, нужен ли, и если да — нужны фотографии</span></li>
+    <li><span class="t">Проверить, что запись ведёт в правильное место</span><span class="n">Кнопка ведёт на birge.astana.kz — подтвердить у заказчицы</span></li>
+  </ul>
+</div>
+
+<div class="sec">
+  <h2>4. Система управления контентом — второй этап по заданию</h2>
+  <ul>
+    <li><span class="t">Прописать репозиторий и ветку в настройках Decap CMS</span><span class="n">Конфигурация всех редактируемых разделов на двух языках уже написана</span></li>
+    <li><span class="t">Поднять OAuth-посредника для GitHub</span><span class="n">Без него редактор не сможет войти в панель</span></li>
+    <li><span class="t">Завести заказчице учётную запись с доступом на запись</span></li>
+    <li><span class="t">Проверить редактирование обоих языков и публикацию через черновики</span></li>
+    <li><span class="t">Короткая инструкция для заказчицы: как добавить новость и заменить документ</span></li>
+  </ul>
+</div>
+
+<div class="sec">
+  <h2>5. Инфраструктура и запуск</h2>
+  <ul>
+    <li class="blocks"><span class="t">Купить домен и настроить его</span><span class="n">За наш счёт, как указано в задании</span></li>
+    <li class="blocks"><span class="t">Выбрать и оплатить хостинг</span><span class="n">Сайт статический: подойдёт любой, включая самый дешёвый shared</span></li>
+    <li class="blocks"><span class="t">SSL-сертификат и переход на HTTPS</span><span class="n">Let's Encrypt, бесплатный. Без него браузеры помечают сайт как небезопасный</span></li>
+    <li class="blocks"><span class="t">Собрать сайт с настоящим адресом</span><span class="n">Иначе canonical, hreflang и карта сайта будут указывать на демо-адрес</span></li>
+    <li><span class="t">Редирект с корня на язык на стороне сервера</span><span class="n">Сейчас работает страница выбора языка, серверное правило быстрее.
+      Готовые примеры для nginx и Apache лежат в README</span></li>
+    <li><span class="t">Настроить выкладку обновлений</span><span class="n">Автоматическую сборку из репозитория или выгрузку папки вручную</span></li>
+    <li><span class="t">Добавить сайт в Google Search Console и Яндекс.Вебмастер</span><span class="n">Чтобы он появился в поиске, а не ждал, пока его найдут</span></li>
+  </ul>
+</div>
+
+<div class="sec">
+  <h2>6. Проверки перед сдачей</h2>
+  <ul>
+    <li class="blocks"><span class="t">Вычитка казахских текстов носителем языка</span><span class="n">Переводы сделаны нами и профессиональной вычитки не проходили.
+      Для государственного учреждения это обязательный шаг</span></li>
+    <li><span class="t">Иконка сайта и картинка для соцсетей</span><span class="n">Сейчас стоит стандартная иконка Next.js, картинки для мессенджеров нет —
+      ссылка на сайт в WhatsApp выглядит пусто</span></li>
+    <li><span class="t">Страница «не найдено» в стиле сайта</span><span class="n">Сейчас стандартная страница фреймворка</span></li>
+    <li><span class="t">Проверка на реальных устройствах</span><span class="n">Телефон, планшет, компьютер; Chrome, Safari, Firefox</span></li>
+    <li><span class="t">Проверка версии для слабовидящих вживую</span><span class="n">Увеличение шрифта, обе цветовые схемы, работа с клавиатуры и скринридером</span></li>
+    <li><span class="t">Замер скорости и доступности</span><span class="n">Lighthouse: производительность, доступность, SEO</span></li>
+    <li><span class="t">Передача исходников и доступов заказчице</span><span class="n">Пункт 7 задания. Инструкция по размещению уже написана</span></li>
+  </ul>
+</div>
+
+<div class="foot">
+  Пометка «блокирует запуск» стоит там, без чего сайт нельзя открыть для людей.
+  Остальное можно доделывать после запуска, не срывая сроки.
+</div>
+
+</body>
+</html>
