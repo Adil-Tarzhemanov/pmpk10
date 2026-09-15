@@ -229,8 +229,21 @@ ErrorDocument 404 /404.html
 ```bash
 npx decap-server      # в отдельной вкладке, поднимется на 8081
 npm run dev           # рядом
-# открыть http://localhost:3000/admin/
+# открыть http://localhost:3000/admin/index.html
 ```
+
+Адрес в dev именно с `index.html`. Весь сайт живёт под `/[lang]/`, и в
+режиме разработки Next сначала примеряет `/admin/` к этому маршруту,
+подставляя `lang = "admin"`. Такого языка нет, а при `output: "export"`
+это считается ошибкой:
+
+```
+Page "/(site)/[lang]/page" is missing param "/[lang]" in "generateStaticParams()"
+```
+
+Ошибка относится только к режиму разработки. В собранной версии
+`/admin/index.html` — обычный файл, и `/admin/` отдаётся хостингом как есть:
+на демо-адресе проверено, возвращает 200.
 
 Работает за счёт `local_backend: true` в `config.yml`. Decap включает этот
 режим только на localhost, на боевом домене он игнорируется.
