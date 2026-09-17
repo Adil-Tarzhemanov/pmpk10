@@ -22,7 +22,8 @@ function config() {
   return { repo, token, branch };
 }
 
-async function call(path: string, init?: RequestInit) {
+/** `ok` — коды, которые вызывающий разбирает сам, а не считает ошибкой */
+async function call(path: string, init?: RequestInit, ok: number[] = []) {
   const { token } = config();
   const res = await fetch(`${API}${path}`, {
     ...init,
@@ -34,7 +35,7 @@ async function call(path: string, init?: RequestInit) {
     },
     cache: "no-store",
   });
-  if (!res.ok) {
+  if (!res.ok && !ok.includes(res.status)) {
     const text = await res.text();
     throw new Error(`GitHub ${res.status}: ${text.slice(0, 300)}`);
   }
@@ -43,10 +44,19 @@ async function call(path: string, init?: RequestInit) {
 
 export type FileEntry = { path: string; name: string };
 
-/** Список файлов в папке репозитория */
+/**
+ * Список файлов в папке репозитория.
+ *
+ * Нет папки — значит, ничего ещё не добавляли: возвращаем пустой список.
+ * Git не хранит пустые каталоги, поэтому `content/news/ru` появляется в
+ * репозитории только вместе с первой новостью, а до того GitHub на него
+ * отвечает 404. Для редактора это не ошибка, а пустой экран с кнопкой
+ * «Добавить новость».
+ */
 export async function listDir(dir: string): Promise<FileEntry[]> {
   const { repo, branch } = config();
-  const res = await call(`/repos/${repo}/contents/${dir}?ref=${branch}`);
+  const res = await call(`/repos/${repo}/contents/${dir}?ref=${branch}`, undefined, [404]);
+  if (res.status === 404) return [];
   const data = (await res.json()) as { path: string; name: string; type: string }[];
   return data
     .filter((e) => e.type === "file" && e.name.endsWith(".json"))
