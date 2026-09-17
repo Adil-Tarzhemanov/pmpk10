@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 /**
@@ -9,6 +10,13 @@ import type { NextConfig } from "next";
  * браузере нельзя. Смешивать одно с другим значило бы лишить сайт главного
  * его свойства ради панели, которой пользуются пару раз в месяц.
  */
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  // Корень — сама папка admin/, а не весь репозиторий. Иначе Turbopack
+  // подхватывает postcss.config.mjs сайта с Tailwind, которого у админки
+  // нет в зависимостях: локально это прячут node_modules сайта в корне,
+  // а на хостинге, где ставятся только зависимости админки, сборка падает.
+  turbopack: { root: path.resolve(__dirname) },
+  outputFileTracingRoot: path.resolve(__dirname),
+};
 
 export default nextConfig;
