@@ -16,7 +16,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Админку CMS индексировать незачем
+      // Админка живёт отдельным приложением, но если её поставят на
+      // этот же домен по /admin/, индексировать её незачем
       disallow: "/admin/",
     },
     sitemap: absoluteUrl("/sitemap.xml"),
