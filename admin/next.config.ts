@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
   // а на хостинге, где ставятся только зависимости админки, сборка падает.
   turbopack: { root: path.resolve(__dirname) },
   outputFileTracingRoot: path.resolve(__dirname),
+
+  // По умолчанию server action принимает не больше 1 МБ: фото с телефона
+  // в новость не проходило, и редактор видел страницу сбоя. Файлы до 4 МБ
+  // (lib/save.ts) плюс запас на остальные поля формы. Больше Vercel всё
+  // равно не пропустит: его предел на запрос — 4,5 МБ.
+  experimental: { serverActions: { bodySizeLimit: "4.4mb" } },
 };
 
 export default nextConfig;

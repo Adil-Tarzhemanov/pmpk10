@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { isSignedIn, endSession } from "@/lib/auth";
-import { readJson, writeJson, deleteFile, uploadImage } from "@/lib/github";
+import { readJson, writeJson, deleteFile, uploadFile, exists } from "@/lib/github";
+import { ACCEPT, MAX_UPLOAD, SAVE_MESSAGES, acceptable, errorCode, isSaveError } from "@/lib/save";
 import { Chrome } from "../../chrome";
+import { ConfirmButton, ErrorMessage, FileField } from "../../controls";
 
 export const dynamic = "force-dynamic";
 
@@ -16,16 +18,26 @@ type News = {
 
 const EMPTY: News = { date: "", dateLabel: "", title: "", summary: "", body: [] };
 
-const MONTHS = [
-  "января", "февраля", "марта", "апреля", "мая", "июня",
-  "июля", "августа", "сентября", "октября", "ноября", "декабря",
-];
+const MONTHS = {
+  ru: [
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря",
+  ],
+  kk: [
+    "қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым",
+    "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан",
+  ],
+};
 
-/** «2026-09-15» → «15 сентября 2026». Редактор дату прописью не набирает */
-function dateLabel(iso: string): string {
+/**
+ * «2026-09-15» → «15 сентября 2026» или «15 қыркүйек 2026». Редактор дату
+ * прописью не набирает ни на одном языке: набранная руками подпись
+ * расходится с датой, как только дату поправят.
+ */
+function dateLabel(iso: string, lang: "ru" | "kk"): string {
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || !m || !d) return iso;
-  return `${d} ${MONTHS[m - 1]} ${y}`;
+  return `${d} ${MONTHS[lang][m - 1]} ${y}`;
 }
 
 /** Заголовок → адрес новости латиницей */
@@ -106,46 +118,67 @@ export default async function NewsEditor({
       redirect(`/news/${slug}?error=fields`);
     }
 
-    const target = isNew ? slugify(titleRu) : slug;
-
-    /* Картинку грузим до записи новости: если она не пройдёт, лучше
-       остановиться, чем сохранить новость со ссылкой в никуда */
-    let image = String(formData.get("currentImage") ?? "") || undefined;
     const file = formData.get("image");
-    if (file instanceof File && file.size > 0) {
-      const bytes = Buffer.from(await file.arrayBuffer());
-      image = await uploadImage(file.name, bytes);
-    }
+    const hasFile = file instanceof File && file.size > 0;
+    if (hasFile && !acceptable(file, "image")) redirect(`/news/${slug}?error=file`);
 
+    /* Браузер отправляет переносы строк из textarea как \r\n: без замены
+       пустая строка между абзацами не находилась, и вся новость выходила
+       одним абзацем */
     const toBody = (value: string) =>
-      value.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
-
-    const ruDoc: News = {
-      date,
-      dateLabel: dateLabel(date),
-      title: titleRu,
-      summary: String(formData.get("summaryRu") ?? "").trim(),
-      ...(image ? { image } : {}),
-      body: toBody(String(formData.get("bodyRu") ?? "")),
-    };
+      value.replace(/\r\n?/g, "\n").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
     const titleKk = String(formData.get("titleKk") ?? "").trim();
     const message = `${isNew ? "Добавлена" : "Изменена"} новость: ${titleRu}`;
 
-    await writeJson(`content/news/ru/${target}.json`, ruDoc, message, isNew ? undefined : ruSha);
+    let problem = "";
+    try {
+      /* Одинаковый заголовок у двух новостей — обычное дело («График
+         приёма на лето»). Адрес тогда получает номер, а не затирает старую */
+      let target = slug;
+      if (isNew) {
+        const base = slugify(titleRu);
+        target = base;
+        for (let n = 2; await exists(`content/news/ru/${target}.json`); n++) target = `${base}-${n}`;
+      }
 
-    if (titleKk) {
-      const kkDoc: News = {
+      /* Картинку грузим до записи новости: если она не пройдёт, лучше
+         остановиться, чем сохранить новость со ссылкой в никуда */
+      let image = String(formData.get("currentImage") ?? "") || undefined;
+      if (file instanceof File && hasFile) {
+        image = await uploadFile(file.name, Buffer.from(await file.arrayBuffer()));
+      }
+
+      const ruDoc: News = {
         date,
-        dateLabel: String(formData.get("dateLabelKk") ?? "").trim() || dateLabel(date),
-        title: titleKk,
-        summary: String(formData.get("summaryKk") ?? "").trim(),
+        dateLabel: dateLabel(date, "ru"),
+        title: titleRu,
+        summary: String(formData.get("summaryRu") ?? "").trim(),
         ...(image ? { image } : {}),
-        body: toBody(String(formData.get("bodyKk") ?? "")),
+        body: toBody(String(formData.get("bodyRu") ?? "")),
       };
-      await writeJson(`content/news/kk/${target}.json`, kkDoc, message, kkSha);
-    }
+      await writeJson(`content/news/ru/${target}.json`, ruDoc, message, isNew ? undefined : ruSha);
 
+      if (titleKk) {
+        const kkDoc: News = {
+          date,
+          dateLabel: dateLabel(date, "kk"),
+          title: titleKk,
+          summary: String(formData.get("summaryKk") ?? "").trim(),
+          ...(image ? { image } : {}),
+          body: toBody(String(formData.get("bodyKk") ?? "")),
+        };
+        await writeJson(`content/news/kk/${target}.json`, kkDoc, message, kkSha);
+      } else if (kkSha) {
+        /* Казахский заголовок стёрли — значит, перевод снят. Иначе на
+           казахской версии сайта осталась бы прежняя редакция новости */
+        await deleteFile(`content/news/kk/${target}.json`, kkSha, message);
+      }
+    } catch (e) {
+      problem = errorCode(e);
+    }
+    /* redirect() работает исключением, поэтому стоит вне try */
+    if (problem) redirect(`/news/${slug}?error=${problem}`);
     redirect("/news");
   }
 
@@ -153,8 +186,14 @@ export default async function NewsEditor({
     "use server";
     if (!(await isSignedIn())) redirect("/login");
     const message = `Удалена новость: ${slug}`;
-    if (ruSha) await deleteFile(`content/news/ru/${slug}.json`, ruSha, message);
-    if (kkSha) await deleteFile(`content/news/kk/${slug}.json`, kkSha, message);
+    let problem = "";
+    try {
+      if (ruSha) await deleteFile(`content/news/ru/${slug}.json`, ruSha, message);
+      if (kkSha) await deleteFile(`content/news/kk/${slug}.json`, kkSha, message);
+    } catch (e) {
+      problem = errorCode(e);
+    }
+    if (problem) redirect(`/news/${slug}?error=${problem}`);
     redirect("/news");
   }
 
@@ -164,8 +203,9 @@ export default async function NewsEditor({
 
       {loadError ? <p className="msg msg--err">{loadError}</p> : null}
       {error === "fields" ? (
-        <p className="msg msg--err">Заполните дату и заголовок на русском.</p>
+        <ErrorMessage text="Заполните дату и заголовок на русском." />
       ) : null}
+      {isSaveError(error) ? <ErrorMessage text={SAVE_MESSAGES[error]} /> : null}
 
       <form action={save}>
         <div className="card">
@@ -177,12 +217,13 @@ export default async function NewsEditor({
 
           <div className="field">
             <label htmlFor="image">Фотография</label>
-            <input id="image" name="image" type="file" accept="image/*" />
+            <FileField id="image" name="image" accept={ACCEPT.image} maxBytes={MAX_UPLOAD} />
             <input type="hidden" name="currentImage" defaultValue={ru.image ?? ""} />
             <span className="hint">
               {ru.image
                 ? "Фотография уже есть. Выберите новую, чтобы заменить."
-                : "Необязательно. Без неё карточка получит узор в цветах сайта."}
+                : "Необязательно. Без неё карточка получит узор в цветах сайта."}{" "}
+              JPG, PNG или WebP, не больше 4 МБ.
             </span>
           </div>
         </div>
@@ -215,10 +256,6 @@ export default async function NewsEditor({
             </span>
           </div>
           <div className="field">
-            <label htmlFor="dateLabelKk">Күні жазбаша</label>
-            <input id="dateLabelKk" name="dateLabelKk" type="text" defaultValue={kk.dateLabel} placeholder="15 қыркүйек 2026" />
-          </div>
-          <div className="field">
             <label htmlFor="summaryKk">Қысқаша сипаттама</label>
             <textarea id="summaryKk" name="summaryKk" defaultValue={kk.summary} />
           </div>
@@ -235,7 +272,7 @@ export default async function NewsEditor({
 
       {!isNew && ruSha ? (
         <form action={remove} style={{ marginTop: 32 }}>
-          <button className="btn btn--danger" type="submit">Удалить новость</button>
+          <ConfirmButton question="Удалить новость с сайта на обоих языках?">Удалить новость</ConfirmButton>
         </form>
       ) : null}
     </Chrome>

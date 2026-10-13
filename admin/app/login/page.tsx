@@ -1,5 +1,6 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkPassword, startSession, isSignedIn } from "@/lib/auth";
+import { checkPassword, startSession, isSignedIn, signInLocked, recordFailure } from "@/lib/auth";
 
 /**
  * Вход. Одно поле: пароль учреждения. Логина нет намеренно — правят
@@ -16,7 +17,11 @@ export default async function LoginPage({
   async function signIn(formData: FormData) {
     "use server";
     const password = String(formData.get("password") ?? "");
+    const h = await headers();
+    const who = h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || "local";
+    if (signInLocked(who)) redirect("/login?error=locked");
     if (!checkPassword(password)) {
+      recordFailure(who);
       redirect("/login?error=1");
     }
     await startSession();
@@ -28,7 +33,13 @@ export default async function LoginPage({
       <h1>Редактирование сайта</h1>
       <p className="lede">ПМПК № 10, акимат города Астаны</p>
 
-      {error ? <p className="msg msg--err">Неверный пароль. Попробуйте ещё раз.</p> : null}
+      {error === "locked" ? (
+        <p className="msg msg--err" role="alert">
+          Слишком много неверных попыток. Вход закрыт на 15 минут.
+        </p>
+      ) : error ? (
+        <p className="msg msg--err" role="alert">Неверный пароль. Попробуйте ещё раз.</p>
+      ) : null}
 
       <form action={signIn} className="card">
         <div className="field">

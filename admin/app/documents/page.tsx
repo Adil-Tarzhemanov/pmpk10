@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { isSignedIn, endSession } from "@/lib/auth";
-import { readJson, writeJson, uploadImage } from "@/lib/github";
+import { readJson, writeJson, uploadFile } from "@/lib/github";
+import { ACCEPT, MAX_UPLOAD, SAVE_MESSAGES, acceptable, errorCode, extension, isSaveError } from "@/lib/save";
 import { Chrome } from "../chrome";
+import { ConfirmButton, ErrorMessage, FileField } from "../controls";
 
 export const dynamic = "force-dynamic";
 
@@ -52,27 +54,36 @@ export default async function Documents({
     if (!(await isSignedIn())) redirect("/login");
 
     const title = String(formData.get("title") ?? "").trim();
+    /* Без перевода на казахской версии будет русское название — лучше, чем пустая строка */
+    const titleKk = String(formData.get("titleKk") ?? "").trim() || title;
     const groupIndex = Number(formData.get("group") ?? -1);
     const file = formData.get("file");
 
     if (title.length < 3 || !(file instanceof File) || file.size === 0) {
       redirect("/documents?error=fields");
     }
-    const upload = file as File;
+    if (!acceptable(file, "document")) redirect("/documents?error=file");
 
-    const bytes = Buffer.from(await upload.arrayBuffer());
-    const href = await uploadImage(upload.name, bytes);
-    const ext = (upload.name.split(".").pop() ?? "").toUpperCase();
+    let problem = "";
+    try {
+      const href = await uploadFile(file.name, Buffer.from(await file.arrayBuffer()));
+      const meta = `${extension(file.name).toUpperCase()} · ${sizeLabel(file.size)}`;
 
-    const doc: Doc = { title, meta: `${ext} · ${sizeLabel(upload.size)}`, href };
-
-    for (const path of ["content/documents/ru.json", "content/documents/kk.json"]) {
-      const { data, sha } = await readJson<Docs>(path);
-      const groups = data.groups.map((g, i) =>
-        i === groupIndex ? { ...g, items: [...g.items, doc] } : g,
-      );
-      await writeJson(path, { ...data, groups }, `Добавлен документ: ${title}`, sha);
+      for (const [path, docTitle] of [
+        ["content/documents/ru.json", title],
+        ["content/documents/kk.json", titleKk],
+      ] as const) {
+        const { data, sha } = await readJson<Docs>(path);
+        const doc: Doc = { title: docTitle, meta, href };
+        const groups = data.groups.map((g, i) =>
+          i === groupIndex ? { ...g, items: [...g.items, doc] } : g,
+        );
+        await writeJson(path, { ...data, groups }, `Добавлен документ: ${title}`, sha);
+      }
+    } catch (e) {
+      problem = errorCode(e);
     }
+    if (problem) redirect(`/documents?error=${problem}`);
     redirect("/documents?saved=1");
   }
 
@@ -81,14 +92,35 @@ export default async function Documents({
     if (!(await isSignedIn())) redirect("/login");
     const g = Number(formData.get("g"));
     const i = Number(formData.get("i"));
+    /* Номер строки — с экрана, который мог устареть: другая вкладка уже
+       убрала строку выше, и под этим номером теперь соседний документ.
+       Название и ссылка подтверждают, что убираем именно то, что видели */
+    const title = String(formData.get("title") ?? "");
+    const href = String(formData.get("href") ?? "");
 
-    for (const path of ["content/documents/ru.json", "content/documents/kk.json"]) {
-      const { data, sha } = await readJson<Docs>(path);
-      const groups = data.groups.map((group, gi) =>
-        gi === g ? { ...group, items: group.items.filter((_, ii) => ii !== i) } : group,
+    let problem = "";
+    try {
+      const files = await Promise.all(
+        ["content/documents/ru.json", "content/documents/kk.json"].map(async (path) => ({
+          path,
+          ...(await readJson<Docs>(path)),
+        })),
       );
-      await writeJson(path, { ...data, groups }, "Убран документ", sha);
+      const seen = files[0].data.groups[g]?.items[i];
+      if (!seen || seen.title !== title || seen.href !== href) {
+        problem = "changed";
+      } else {
+        for (const { path, data, sha } of files) {
+          const groups = data.groups.map((group, gi) =>
+            gi === g ? { ...group, items: group.items.filter((_, ii) => ii !== i) } : group,
+          );
+          await writeJson(path, { ...data, groups }, `Убран документ: ${title}`, sha);
+        }
+      }
+    } catch (e) {
+      problem = errorCode(e);
     }
+    if (problem) redirect(`/documents?error=${problem}`);
     redirect("/documents?saved=1");
   }
 
@@ -99,9 +131,8 @@ export default async function Documents({
 
       {loadError ? <p className="msg msg--err">{loadError}</p> : null}
       {saved ? <p className="msg msg--ok">Сохранено. Сайт обновится в течение минуты.</p> : null}
-      {error === "fields" ? (
-        <p className="msg msg--err">Укажите название и выберите файл.</p>
-      ) : null}
+      {error === "fields" ? <ErrorMessage text="Укажите название и выберите файл." /> : null}
+      {isSaveError(error) ? <ErrorMessage text={SAVE_MESSAGES[error]} /> : null}
 
       {ru ? (
         <>
@@ -113,6 +144,11 @@ export default async function Documents({
               <span className="hint">Так документ увидит посетитель.</span>
             </div>
             <div className="field">
+              <label htmlFor="titleKk">Атауы (на казахском)</label>
+              <input id="titleKk" name="titleKk" type="text" />
+              <span className="hint">Не заполните — на казахской версии будет русское название.</span>
+            </div>
+            <div className="field">
               <label htmlFor="group">В какой раздел</label>
               <select id="group" name="group" defaultValue="0">
                 {ru.groups.map((g, i) => (
@@ -122,8 +158,8 @@ export default async function Documents({
             </div>
             <div className="field">
               <label htmlFor="file">Файл</label>
-              <input id="file" name="file" type="file" required />
-              <span className="hint">Формат и вес подставятся сами.</span>
+              <FileField id="file" name="file" accept={ACCEPT.document} maxBytes={MAX_UPLOAD} required />
+              <span className="hint">PDF, Word, Excel или картинка, не больше 4 МБ. Формат и вес подставятся сами.</span>
             </div>
             <button className="btn btn--primary" type="submit">Выложить</button>
           </form>
@@ -134,7 +170,7 @@ export default async function Documents({
               <p style={{ fontWeight: 600, marginBottom: 8 }}>{group.title}</p>
               <ul className="list">
                 {group.items.map((doc, i) => (
-                  <li key={doc.title}>
+                  <li key={`${i}-${doc.href}`}>
                     <span className="list__main">
                       <strong>{doc.title}</strong>
                       <span className="list__date">
@@ -145,7 +181,9 @@ export default async function Documents({
                     <form action={removeDoc}>
                       <input type="hidden" name="g" value={g} />
                       <input type="hidden" name="i" value={i} />
-                      <button className="btn btn--danger" type="submit">Убрать</button>
+                      <input type="hidden" name="title" value={doc.title} />
+                      <input type="hidden" name="href" value={doc.href} />
+                      <ConfirmButton question={`Убрать с сайта «${doc.title}»?`}>Убрать</ConfirmButton>
                     </form>
                   </li>
                 ))}

@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+/* Адрес сайта меняется при переезде на свой домен — без правки кода */
+const SITE_URL = (process.env.SITE_URL ?? "https://pmpk10-demo.vercel.app").replace(/\/$/, "");
+
 /** Общая обвязка: шапка с выходом и ссылкой на сайт */
 export function Chrome({
   children,
@@ -16,7 +19,7 @@ export function Chrome({
         <div className="top__inner">
           <span className="top__name">ПМПК № 10</span>
           <Link href="/">Все разделы</Link>
-          <a href="https://pmpk10-demo.vercel.app/ru/" target="_blank" rel="noopener noreferrer">
+          <a href={`${SITE_URL}/ru/`} target="_blank" rel="noopener noreferrer">
             Открыть сайт
           </a>
           <span className="top__spacer" />

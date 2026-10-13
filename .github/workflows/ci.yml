@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Каждая правка из админки — тоже коммит, поэтому CI проверяет и её:
+  # испорченный контент виден здесь раньше, чем на сайте.
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Сборка с боевым адресом: robots.txt и sitemap.xml проверяются в том виде,
+      # в каком уйдут на хостинг, а не закрытыми, как у демо
+      NEXT_PUBLIC_SITE_URL: https://pmpk10.edu.kz
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            admin/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix admin
+
+      - name: Контент
+        run: npm run check:content
+      - run: npm run lint
+      - run: npm run type-check
+      - run: npm run build
+      - name: Собранный сайт
+        run: npm run check:build
+      - run: npm run build --prefix admin
+
+      - run: npx playwright install --with-deps chromium
+      - name: Сквозные сценарии
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7

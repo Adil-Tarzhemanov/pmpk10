@@ -57,12 +57,34 @@ const LABELS: Record<string, string> = {
 
 export const label = (key: string) => LABELS[key] ?? key;
 
-/** Пустое значение: пустая строка, пустой список, объект из пустых полей */
-export function isEmpty(value: Json): boolean {
-  if (typeof value === "string") return value.trim() === "";
-  if (Array.isArray(value)) return value.length === 0;
-  if (value && typeof value === "object") return Object.values(value).every(isEmpty);
-  return false;
+/** Образец пункта с пустыми полями — строка формы для нового элемента */
+export function blank(sample: Json): Json {
+  if (typeof sample === "string") return "";
+  if (Array.isArray(sample)) return sample.length > 0 ? [blank(sample[0])] : [];
+  if (sample && typeof sample === "object") {
+    return Object.fromEntries(Object.entries(sample).map(([k, v]) => [k, blank(v)]));
+  }
+  return sample;
+}
+
+/**
+ * Пункт пуст на обоих языках. Решать по одному языку нельзя: пункт,
+ * заполненный только по-русски, попал бы в русский файл и не попал в
+ * казахский, списки разошлись бы на одну позицию, и дальше каждому
+ * русскому пункту в форме стоял бы в пару чужой казахский.
+ *
+ * Пункт без текстовых полей в форме (только числа и флаги) пустым не
+ * считается: редактор его не видит и стереть не мог.
+ */
+function blankInForm(form: FormData, path: string): boolean {
+  let found = false;
+  for (const [name, value] of form.entries()) {
+    const field = name.replace(/^(ru|kk)::/, "");
+    if (field === name || (field !== path && !field.startsWith(`${path}.`))) continue;
+    found = true;
+    if (String(value).trim() !== "") return false;
+  }
+  return found;
 }
 
 /**
@@ -82,15 +104,15 @@ export function rebuild(
   if (Array.isArray(original)) {
     const kept: Json[] = [];
     original.forEach((item, i) => {
-      if (form.get(`del::${path}.${i}`)) return;
-      const next = rebuild(item, `${path}.${i}`, form, lang);
-      if (!isEmpty(next)) kept.push(next);
+      const at = `${path}.${i}`;
+      if (form.get(`del::${at}`) || blankInForm(form, at)) return;
+      kept.push(rebuild(item, at, form, lang));
     });
     // Последняя строка формы — пустая, для нового пункта. Её образец —
-    // первый элемент списка: по нему видно, из каких полей состоит пункт.
-    if (original.length > 0) {
-      const fresh = rebuild(original[0], `${path}.new`, form, lang);
-      if (!isEmpty(fresh)) kept.push(fresh);
+    // первый элемент списка без текста: по нему видно, из каких полей
+    // состоит пункт, а его собственные строки в новый пункт не попадают.
+    if (original.length > 0 && !blankInForm(form, `${path}.new`)) {
+      kept.push(rebuild(blank(original[0]), `${path}.new`, form, lang));
     }
     return kept;
   }

@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { isSignedIn, endSession } from "@/lib/auth";
 import { readJson, writeJson } from "@/lib/github";
+import { SAVE_MESSAGES, errorCode, isSaveError } from "@/lib/save";
 import { Chrome } from "../chrome";
+import { ConfirmButton, ErrorMessage } from "../controls";
 
 export const dynamic = "force-dynamic";
 
@@ -67,18 +69,24 @@ export default async function Vacancies({
       offer: lines(String(formData.get(`offer${lang}`) ?? "")),
     });
 
-    for (const [path, lang] of [
-      ["content/vacancies/ru.json", "Ru"],
-      ["content/vacancies/kk.json", "Kk"],
-    ] as const) {
-      const { data, sha } = await readJson<Vacancies>(path);
-      await writeJson(
-        path,
-        { ...data, items: [...data.items, build(lang, roleRu)] },
-        `Открыта вакансия: ${roleRu}`,
-        sha,
-      );
+    let problem = "";
+    try {
+      for (const [path, lang] of [
+        ["content/vacancies/ru.json", "Ru"],
+        ["content/vacancies/kk.json", "Kk"],
+      ] as const) {
+        const { data, sha } = await readJson<Vacancies>(path);
+        await writeJson(
+          path,
+          { ...data, items: [...data.items, build(lang, roleRu)] },
+          `Открыта вакансия: ${roleRu}`,
+          sha,
+        );
+      }
+    } catch (e) {
+      problem = errorCode(e);
     }
+    if (problem) redirect(`/vacancies?error=${problem}`);
     redirect("/vacancies?saved=1");
   }
 
@@ -86,15 +94,34 @@ export default async function Vacancies({
     "use server";
     if (!(await isSignedIn())) redirect("/login");
     const i = Number(formData.get("i"));
-    for (const path of ["content/vacancies/ru.json", "content/vacancies/kk.json"]) {
-      const { data, sha } = await readJson<Vacancies>(path);
-      await writeJson(
-        path,
-        { ...data, items: data.items.filter((_, index) => index !== i) },
-        "Закрыта вакансия",
-        sha,
+    /* Должность подтверждает, что под этим номером та же вакансия, что
+       была на экране: список могли поменять в другой вкладке */
+    const role = String(formData.get("role") ?? "");
+
+    let problem = "";
+    try {
+      const files = await Promise.all(
+        ["content/vacancies/ru.json", "content/vacancies/kk.json"].map(async (path) => ({
+          path,
+          ...(await readJson<Vacancies>(path)),
+        })),
       );
+      if (files[0].data.items[i]?.role !== role) {
+        problem = "changed";
+      } else {
+        for (const { path, data, sha } of files) {
+          await writeJson(
+            path,
+            { ...data, items: data.items.filter((_, index) => index !== i) },
+            `Закрыта вакансия: ${role}`,
+            sha,
+          );
+        }
+      }
+    } catch (e) {
+      problem = errorCode(e);
     }
+    if (problem) redirect(`/vacancies?error=${problem}`);
     redirect("/vacancies?saved=1");
   }
 
@@ -107,7 +134,8 @@ export default async function Vacancies({
 
       {loadError ? <p className="msg msg--err">{loadError}</p> : null}
       {saved ? <p className="msg msg--ok">Сохранено. Сайт обновится в течение минуты.</p> : null}
-      {error === "fields" ? <p className="msg msg--err">Укажите должность.</p> : null}
+      {error === "fields" ? <ErrorMessage text="Укажите должность." /> : null}
+      {isSaveError(error) ? <ErrorMessage text={SAVE_MESSAGES[error]} /> : null}
 
       {ru ? (
         <>
@@ -117,14 +145,15 @@ export default async function Vacancies({
           ) : (
             <ul className="list">
               {ru.items.map((v, i) => (
-                <li key={v.role}>
+                <li key={`${i}-${v.role}`}>
                   <span className="list__main">
                     <strong>{v.role}</strong>
                     <span className="list__date">{v.chips.join(" · ")}</span>
                   </span>
                   <form action={close}>
                     <input type="hidden" name="i" value={i} />
-                    <button className="btn btn--danger" type="submit">Закрыть</button>
+                    <input type="hidden" name="role" value={v.role} />
+                    <ConfirmButton question={`Закрыть вакансию «${v.role}»? Она пропадёт с сайта.`}>Закрыть</ConfirmButton>
                   </form>
                 </li>
               ))}

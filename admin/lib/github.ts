@@ -10,7 +10,15 @@
  * единственный источник правды остаётся один, репозиторий.
  */
 
-const API = "https://api.github.com";
+/* Адрес API меняют только тесты: e2e/fake-github.mjs отвечает вместо GitHub */
+const api = () => process.env.CONTENT_API ?? "https://api.github.com";
+
+/**
+ * Файл изменили с момента, как его прочитали: GitHub отвечает 409, если
+ * переданный sha устарел, и 422, если файл уже есть, а sha не передан.
+ * Это не сбой, а чужая правка — редактору показывается своё сообщение.
+ */
+export class ConflictError extends Error {}
 
 function config() {
   const repo = process.env.CONTENT_REPO; // Adil-Tarzhemanov/pmpk10
@@ -25,7 +33,7 @@ function config() {
 /** `ok` — коды, которые вызывающий разбирает сам, а не считает ошибкой */
 async function call(path: string, init?: RequestInit, ok: number[] = []) {
   const { token } = config();
-  const res = await fetch(`${API}${path}`, {
+  const res = await fetch(`${api()}${path}`, {
     ...init,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -37,6 +45,10 @@ async function call(path: string, init?: RequestInit, ok: number[] = []) {
   });
   if (!res.ok && !ok.includes(res.status)) {
     const text = await res.text();
+    const write = init?.method === "PUT" || init?.method === "DELETE";
+    if (write && (res.status === 409 || res.status === 422)) {
+      throw new ConflictError(`GitHub ${res.status}: ${text.slice(0, 300)}`);
+    }
     throw new Error(`GitHub ${res.status}: ${text.slice(0, 300)}`);
   }
   return res;
@@ -61,6 +73,13 @@ export async function listDir(dir: string): Promise<FileEntry[]> {
   return data
     .filter((e) => e.type === "file" && e.name.endsWith(".json"))
     .map((e) => ({ path: e.path, name: e.name }));
+}
+
+/** Есть ли файл: нужно, чтобы новая новость не легла поверх старой */
+export async function exists(path: string): Promise<boolean> {
+  const { repo, branch } = config();
+  const res = await call(`/repos/${repo}/contents/${path}?ref=${branch}`, undefined, [404]);
+  return res.status !== 404;
 }
 
 /** Содержимое файла плюс его sha — он нужен, чтобы перезаписать файл */
@@ -104,8 +123,8 @@ export async function deleteFile(path: string, sha: string, message: string): Pr
   });
 }
 
-/** Загрузка картинки. Возвращает адрес, по которому она будет на сайте */
-export async function uploadImage(name: string, bytes: Buffer): Promise<string> {
+/** Загрузка файла в public/uploads. Возвращает адрес, по которому он будет на сайте */
+export async function uploadFile(name: string, bytes: Buffer): Promise<string> {
   const { repo, branch } = config();
   // Имя чистим и делаем уникальным: иначе два «foto.jpg» затрут друг друга
   const safe = name.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-|-$/g, "");

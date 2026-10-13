@@ -93,3 +93,30 @@ export async function isSignedIn(): Promise<boolean> {
 
   return Number(expires) > Date.now();
 }
+
+/**
+ * Ограничение неудачных входов: пять ошибок за пятнадцать минут с одного
+ * адреса, дальше вход закрыт до конца окна. Пароль у админки один на всё
+ * учреждение, и без предела его можно перебирать бесконечно.
+ *
+ * Счётчик в памяти процесса. На своём сервере процесс один, и этого
+ * достаточно. На Vercel экземпляров несколько и счётчик у каждого свой —
+ * предел там слабее, но всё равно замедляет перебор.
+ */
+const FAILURE_LIMIT = 5;
+const FAILURE_WINDOW_MS = 15 * 60 * 1000;
+const failures = new Map<string, number[]>();
+
+function recent(key: string): number[] {
+  const now = Date.now();
+  const list = (failures.get(key) ?? []).filter((t) => now - t < FAILURE_WINDOW_MS);
+  if (list.length > 0) failures.set(key, list);
+  else failures.delete(key);
+  return list;
+}
+
+export const signInLocked = (key: string) => recent(key).length >= FAILURE_LIMIT;
+
+export function recordFailure(key: string): void {
+  failures.set(key, [...recent(key), Date.now()]);
+}

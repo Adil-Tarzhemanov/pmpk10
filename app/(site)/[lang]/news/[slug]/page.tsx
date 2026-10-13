@@ -12,6 +12,7 @@ import {
   locales,
   ogLocale,
   path,
+  type Locale,
 } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site";
 
@@ -29,15 +30,22 @@ import { absoluteUrl } from "@/lib/site";
  */
 const NO_NEWS_PLACEHOLDER = "net-novostey";
 
-export function generateStaticParams() {
-  const params = locales.flatMap((lang) =>
-    getNews(lang).map((item) => ({ lang, slug: item.slug })),
-  );
+/* Новость может выйти на одном языке раньше, чем на другом: админка
+   разрешает сохранить её без перевода. Страница нужна на обоих языках
+   всё равно — на неё ведёт переключатель языка, и без неё посетитель
+   получил бы 404. Там, где перевода нет, она отправляет к оригиналу. */
+const allSlugs = () => [...new Set(locales.flatMap((l) => getNews(l).map((item) => item.slug)))];
 
-  return params.length > 0
-    ? params
-    : locales.map((lang) => ({ lang, slug: NO_NEWS_PLACEHOLDER }));
+export function generateStaticParams() {
+  const slugs = allSlugs();
+  return locales.flatMap((lang) =>
+    (slugs.length > 0 ? slugs : [NO_NEWS_PLACEHOLDER]).map((slug) => ({ lang, slug })),
+  );
 }
+
+/** Язык, на котором новость есть, если на этом её нет */
+const otherLocale = (lang: Locale, slug: string) =>
+  locales.find((l) => l !== lang && getNewsItem(l, slug));
 
 export async function generateMetadata({
   params,
@@ -49,6 +57,7 @@ export async function generateMetadata({
   if (!item) return { robots: { index: false, follow: false } };
 
   const route = `/news/${slug}`;
+  const translated = locales.filter((l) => getNewsItem(l, slug));
   return {
     title: item.title,
     description: item.summary,
@@ -63,7 +72,7 @@ export async function generateMetadata({
     alternates: {
       canonical: absoluteUrl(path(lang, route)),
       languages: Object.fromEntries(
-        locales.map((l) => [htmlLang[l], absoluteUrl(path(l, route))]),
+        translated.map((l) => [htmlLang[l], absoluteUrl(path(l, route))]),
       ),
     },
   };
@@ -77,7 +86,25 @@ export default async function NewsItemPage({
 
   const dict = getDictionary(lang);
   const item = getNewsItem(lang, slug);
-  if (!item) return <NotFoundBody />;
+  if (!item) {
+    const other = otherLocale(lang, slug);
+    if (!other) return <NotFoundBody />;
+    return (
+      <Band>
+        <div style={{ maxWidth: "60ch" }}>
+          <h1 style={{ marginBlock: "0 16px" }}>{dict.news.onlyOther}</h1>
+          <p style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
+            <Link className="btn btn--primary" href={path(other, `/news/${slug}`)} hrefLang={other}>
+              {dict.news.openOther}
+            </Link>
+            <Link className="btn btn--ghost" href={path(lang, "/news")}>
+              {dict.common.backToNews}
+            </Link>
+          </p>
+        </div>
+      </Band>
+    );
+  }
 
   return (
     <Band>

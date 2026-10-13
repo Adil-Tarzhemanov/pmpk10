@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { isSignedIn, endSession } from "@/lib/auth";
-import { readJson, writeJson } from "@/lib/github";
+import { ConflictError, readJson, writeJson } from "@/lib/github";
+import { SAVE_MESSAGES, errorCode, isSaveError } from "@/lib/save";
 import { Chrome } from "../chrome";
+import { ErrorMessage } from "../controls";
 
 export const dynamic = "force-dynamic";
 
@@ -76,10 +78,20 @@ export default async function Contacts({
       redirect("/contacts?error=fields");
     }
 
-    const a = await readJson<Site>("content/site/ru.json");
-    const b = await readJson<Site>("content/site/kk.json");
+    let problem = "";
+    try {
+      const a = await readJson<Site>("content/site/ru.json");
+      const b = await readJson<Site>("content/site/kk.json");
 
-    const common = {
+      /* sha с экрана, а не только что прочитанный: если файл успели
+         сохранить из другой вкладки, форма показывала старые данные, и
+         запись затёрла бы чужую правку. Проверяем оба файла до записи,
+         чтобы не сохранить один язык из двух */
+      if (a.sha !== formData.get("shaRu") || b.sha !== formData.get("shaKk")) {
+        throw new ConflictError("Контакты изменены после открытия формы");
+      }
+
+      const common = {
       phone,
       phoneHref: toTel(phone),
       whatsapp: String(formData.get("whatsapp") ?? "").trim(),
@@ -91,34 +103,37 @@ export default async function Contacts({
       addressTbd: false,
     };
 
-    await writeJson(
-      "content/site/ru.json",
-      {
-        ...a.data,
-        ...common,
-        address: String(formData.get("addressRu") ?? "").trim(),
-        reception: String(formData.get("receptionRu") ?? "").trim(),
-        hours: String(formData.get("hoursRu") ?? "").trim(),
-        hoursShort: String(formData.get("hoursShortRu") ?? "").trim(),
-      },
-      "Изменены контакты и график (рус)",
-      a.sha,
-    );
+      await writeJson(
+        "content/site/ru.json",
+        {
+          ...a.data,
+          ...common,
+          address: String(formData.get("addressRu") ?? "").trim(),
+          reception: String(formData.get("receptionRu") ?? "").trim(),
+          hours: String(formData.get("hoursRu") ?? "").trim(),
+          hoursShort: String(formData.get("hoursShortRu") ?? "").trim(),
+        },
+        "Изменены контакты и график (рус)",
+        a.sha,
+      );
 
-    await writeJson(
-      "content/site/kk.json",
-      {
-        ...b.data,
-        ...common,
-        address: String(formData.get("addressKk") ?? "").trim(),
-        reception: String(formData.get("receptionKk") ?? "").trim(),
-        hours: String(formData.get("hoursKk") ?? "").trim(),
-        hoursShort: String(formData.get("hoursShortKk") ?? "").trim(),
-      },
-      "Изменены контакты и график (каз)",
-      b.sha,
-    );
-
+      await writeJson(
+        "content/site/kk.json",
+        {
+          ...b.data,
+          ...common,
+          address: String(formData.get("addressKk") ?? "").trim(),
+          reception: String(formData.get("receptionKk") ?? "").trim(),
+          hours: String(formData.get("hoursKk") ?? "").trim(),
+          hoursShort: String(formData.get("hoursShortKk") ?? "").trim(),
+        },
+        "Изменены контакты и график (каз)",
+        b.sha,
+      );
+    } catch (e) {
+      problem = errorCode(e);
+    }
+    if (problem) redirect(`/contacts?error=${problem}`);
     redirect("/contacts?saved=1");
   }
 
@@ -129,12 +144,13 @@ export default async function Contacts({
 
       {loadError ? <p className="msg msg--err">{loadError}</p> : null}
       {saved ? <p className="msg msg--ok">Сохранено. Сайт обновится в течение минуты.</p> : null}
-      {error === "fields" ? (
-        <p className="msg msg--err">Проверьте телефон и адрес почты.</p>
-      ) : null}
+      {error === "fields" ? <ErrorMessage text="Проверьте телефон и адрес почты." /> : null}
+      {isSaveError(error) ? <ErrorMessage text={SAVE_MESSAGES[error]} /> : null}
 
       {ru && kk ? (
         <form action={save}>
+          <input type="hidden" name="shaRu" value={ruSha} />
+          <input type="hidden" name="shaKk" value={kkSha} />
           <div className="card">
             <div className="field">
               <label htmlFor="phone">Телефон</label>

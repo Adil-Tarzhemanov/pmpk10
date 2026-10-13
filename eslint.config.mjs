@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Сборка админки и выгрузка старого демо — не исходники
+    "admin/.next/**",
+    "pmpk10-demo/**",
+    // Отчёты Playwright
+    "playwright-report/**",
+    "test-results/**",
   ]),
 ]);
 

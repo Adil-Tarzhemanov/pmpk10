@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getNews } from "@/lib/content";
-import { htmlLang, locales, path } from "@/lib/i18n";
+import { htmlLang, locales, path, type Locale } from "@/lib/i18n";
 import { pageUrl } from "@/lib/site";
 
 /**
@@ -25,9 +25,9 @@ const staticRoutes = [
   "/contacts",
 ];
 
-const alternatesFor = (route: string) => ({
+const alternatesFor = (route: string, available: readonly Locale[] = locales) => ({
   languages: Object.fromEntries(
-    locales.map((locale) => [htmlLang[locale], pageUrl(path(locale, route))]),
+    available.map((locale) => [htmlLang[locale], pageUrl(path(locale, route))]),
   ),
 });
 
@@ -51,7 +51,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: item.date,
         changeFrequency: "yearly" as const,
         priority: 0.5,
-        alternates: alternatesFor(route),
+        // Только языки, на которых новость есть: страница без перевода
+        // лишь отсылает к оригиналу, и поисковику её как версию не показываем
+        alternates: alternatesFor(
+          route,
+          locales.filter((l) => getNews(l).some((other) => other.slug === item.slug)),
+        ),
       };
     }),
   );

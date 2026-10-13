@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { isSignedIn, endSession } from "@/lib/auth";
-import { readJson, writeJson } from "@/lib/github";
+import { ConflictError, readJson, writeJson } from "@/lib/github";
+import { SAVE_MESSAGES, errorCode, isSaveError } from "@/lib/save";
 import {
   PAGES,
+  blank,
   filePath,
   isPageKey,
   label,
@@ -11,6 +13,7 @@ import {
   type PageKey,
 } from "@/lib/pages";
 import { Chrome } from "../../chrome";
+import { ErrorMessage } from "../../controls";
 
 export const dynamic = "force-dynamic";
 
@@ -40,10 +43,12 @@ export default async function PageEditor({
 
   let ru: Json | null = null;
   let kk: Json | null = null;
+  let shaRu = "";
+  let shaKk = "";
   let loadError = "";
   try {
-    ru = (await readJson<Json>(filePath(key, "ru"))).data;
-    kk = (await readJson<Json>(filePath(key, "kk"))).data;
+    ({ data: ru, sha: shaRu } = await readJson<Json>(filePath(key, "ru")));
+    ({ data: kk, sha: shaKk } = await readJson<Json>(filePath(key, "kk")));
   } catch (e) {
     loadError = e instanceof Error ? e.message : "Не удалось открыть тексты страницы";
   }
@@ -58,14 +63,29 @@ export default async function PageEditor({
     "use server";
     if (!(await isSignedIn())) redirect("/login");
 
-    /* Файлы перечитываем перед записью: sha из них подтверждает, что с
-       момента открытия экрана никто не сохранил свою версию поверх */
-    for (const lang of ["ru", "kk"] as const) {
-      const path = filePath(key as PageKey, lang);
-      const { data, sha } = await readJson<Json>(path);
-      const next = rebuild(data, "", formData, lang);
-      await writeJson(path, next, `Изменены тексты: ${PAGES[key as PageKey].title}`, sha);
+    /* Поля формы адресуют пункты списков по номерам. Если файл успели
+       сохранить из другой вкладки, номера могли сдвинуться, и правка легла
+       бы не на тот пункт. sha с экрана это ловит: оба файла сверяются
+       до записи, чтобы не сохранить один язык из двух */
+    let problem = "";
+    try {
+      const files = await Promise.all(
+        (["ru", "kk"] as const).map(async (lang) => {
+          const path = filePath(key as PageKey, lang);
+          return { lang, path, ...(await readJson<Json>(path)) };
+        }),
+      );
+      if (files.some((f) => f.sha !== formData.get(`sha::${f.lang}`))) {
+        throw new ConflictError("Тексты изменены после открытия формы");
+      }
+      for (const { lang, path, data, sha } of files) {
+        const next = rebuild(data, "", formData, lang);
+        await writeJson(path, next, `Изменены тексты: ${PAGES[key as PageKey].title}`, sha);
+      }
+    } catch (e) {
+      problem = errorCode(e);
     }
+    if (problem) redirect(`/pages/${key}?error=${problem}`);
     redirect(`/pages/${key}?saved=1`);
   }
 
@@ -78,10 +98,12 @@ export default async function PageEditor({
       {saved ? (
         <p className="msg msg--ok">Сохранено. Сайт обновится в течение минуты.</p>
       ) : null}
-      {error ? <p className="msg msg--err">Не удалось сохранить. Попробуйте ещё раз.</p> : null}
+      {isSaveError(error) ? <ErrorMessage text={SAVE_MESSAGES[error]} /> : null}
 
       {ru ? (
         <form action={save}>
+          <input type="hidden" name="sha::ru" value={shaRu} />
+          <input type="hidden" name="sha::kk" value={shaKk} />
           <Node node={ru} other={kk} path="" heading="" />
           <p className="row">
             <button className="btn btn--primary" type="submit">
@@ -167,16 +189,6 @@ function Node({
   /* Числа и флаги (координаты карты, признаки «уточняется») редактор не
      показывает: это настройки, а не текст. Сохранятся как были. */
   return null;
-}
-
-/** Образец пункта с пустыми полями — строка формы для нового элемента */
-function blank(sample: Json): Json {
-  if (typeof sample === "string") return "";
-  if (Array.isArray(sample)) return sample.length > 0 ? [blank(sample[0])] : [];
-  if (sample && typeof sample === "object") {
-    return Object.fromEntries(Object.entries(sample).map(([k, v]) => [k, blank(v)]));
-  }
-  return sample;
 }
 
 /** Одно поле: русский текст и казахский рядом */

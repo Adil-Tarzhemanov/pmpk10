@@ -44,6 +44,9 @@ export type Dictionary = {
   news: {
     /** Показывается, пока в content/news/ нет ни одной новости */
     empty: string;
+    /** Новость есть только на другом языке: перевод ещё не выложили */
+    onlyOther: string;
+    openOther: string;
   };
 
   contacts: {

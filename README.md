@@ -34,6 +34,7 @@ npm install
 npm run dev      # http://localhost:3000 — откроется выбор языка
 npm run build    # готовый сайт в out/
 npm run lint
+npm run check    # все проверки и тесты, как в CI — см. docs/testing.md
 ```
 
 Корень `/` — страница выбора языка: скрипт смотрит язык браузера и уходит
